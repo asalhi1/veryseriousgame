@@ -1,0 +1,20 @@
+[
+  {"text": "tax the moon", "category": "absurd"},
+  {"text": "space vampires", "category": "absurd"},
+  {"text": "mayonnaise", "category": "absurd"},
+  {"text": "subsidize", "category": "policy"},
+  {"text": "the middle class", "category": "policy"},
+  {"text": "global warming", "category": "policy"},
+  {"text": "ban", "category": "action"},
+  {"text": "invest in", "category": "action"},
+  {"text": "explode", "category": "action"},
+  {"text": "frankly,", "category": "rhetorical"},
+  {"text": "my opponent wants to", "category": "rhetorical"},
+  {"text": "and why?", "category": "rhetorical"},
+  {"text": "with pure hatred", "category": "emotional"},
+  {"text": "cry tears of joy", "category": "emotional"},
+  {"text": "betrayed", "category": "emotional"},
+  {"text": "period.", "category": "closer"},
+  {"text": "for america.", "category": "closer"},
+  {"text": "forever.", "category": "closer"}
+]
