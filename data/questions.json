@@ -1,0 +1,86 @@
+[
+  {
+    "id": "economy",
+    "text": "the stock market is in freefall. what is your immediate rescue plan?",
+    "keywords": ["class"],
+    "tone": "policy"
+  },
+  {
+    "id": "aliens",
+    "text": "unidentified flying objects are stealing our cows. care to comment?",
+    "keywords": ["space"],
+    "tone": "absurd"
+  },
+  {
+    "id": "scandal",
+    "text": "your opponent claims you wore a clown suit to a senate hearing. reactions?",
+    "keywords": ["opponent"],
+    "tone": "rhetorical"
+  },
+  {
+    "id": "floods",
+    "text": "coastal cities are flooding and the cameras are rolling. what happens in your first hour?",
+    "keywords": ["climate", "response"],
+    "tone": "action"
+  },
+  {
+    "id": "healthcare",
+    "text": "hospitals are overloaded and people are furious. how do you calm the nation tonight?",
+    "keywords": ["health", "cost"],
+    "tone": "emotional"
+  },
+  {
+    "id": "debate_stage",
+    "text": "you have thirty seconds before the moderator cuts your mic. what is your closing hit?",
+    "keywords": ["debate", "timer"],
+    "tone": "closer"
+  },
+  {
+    "id": "budget_hole",
+    "text": "the treasury discovered a billion-dollar accounting hole. what policy move lands first?",
+    "keywords": ["budget", "numbers"],
+    "tone": "policy"
+  },
+  {
+    "id": "robot_union",
+    "text": "factory robots formed a union and demand nap breaks. official statement?",
+    "keywords": ["automation", "labor"],
+    "tone": "absurd"
+  },
+  {
+    "id": "press_attack",
+    "text": "a reporter asks if your plan is just vibes and smoke. how do you pivot on live tv?",
+    "keywords": ["media", "pivot"],
+    "tone": "rhetorical"
+  },
+  {
+    "id": "youth_vote",
+    "text": "young voters say nobody hears them anymore. what do you tell them right now?",
+    "keywords": ["youth", "trust"],
+    "tone": "emotional"
+  },
+  {
+    "id": "grid_failure",
+    "text": "the national power grid went dark during your rally. what order do you give first?",
+    "keywords": ["infrastructure", "crisis"],
+    "tone": "action"
+  },
+  {
+    "id": "coalition",
+    "text": "your coalition is fighting on stage while voters watch. deliver the final line that holds it together.",
+    "keywords": ["unity", "stage"],
+    "tone": "closer"
+  },
+  {
+    "id": "rent_spike",
+    "text": "rent doubled in every major city this month. what is your concrete housing fix?",
+    "keywords": ["housing", "cost"],
+    "tone": "policy"
+  },
+  {
+    "id": "mascot_revolt",
+    "text": "all campaign mascots have declared independence and seized your bus. your response?",
+    "keywords": ["campaign", "chaos"],
+    "tone": "absurd"
+  }
+]
