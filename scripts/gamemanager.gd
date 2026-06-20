@@ -13,6 +13,12 @@ var trust_vs_confusion: float = 50.0
 var hype_vs_meme: float = 50.0
 var total_score: float = 0.0
 var answered_questions: int = 0
+var awaiting_round_continue: bool = false
+
+var last_round_score: float = 0.0
+var last_round_combo_names: Array[String] = []
+var last_round_tone_matches: int = 0
+var last_round_speech_text: String = ""
 
 func _ready() -> void:
   randomize()
@@ -23,6 +29,10 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
   if Input.is_action_just_pressed("ui_accept"):
+    if awaiting_round_continue:
+      continue_to_next_question()
+      return
+
     if current_question == null:
       _start_new_round()
     else:
@@ -71,6 +81,10 @@ func _add_key_action(action_name: String, keycode: Key) -> void:
   InputMap.action_add_event(action_name, input_event)
 
 func _deal_and_preview_hand() -> void:
+  if awaiting_round_continue:
+    print("cannot deal while feedback is open")
+    return
+
   if master_word_bank.size() < 5:
     push_error("not enough words to deal a hand")
     return
@@ -92,6 +106,10 @@ func _deal_and_preview_hand() -> void:
   _print_current_hand()
 
 func _start_new_round() -> void:
+  if awaiting_round_continue:
+    print("finish feedback before starting a new round")
+    return
+
   if master_question_bank.is_empty():
     push_error("no questions loaded")
     return
@@ -105,6 +123,10 @@ func _start_new_round() -> void:
   _deal_and_preview_hand()
 
 func _pick_word_from_hand(index: int) -> void:
+  if awaiting_round_continue:
+    print("round is waiting for continue")
+    return
+
   if current_hand.is_empty():
     print("no hand active, press enter to deal")
     return
@@ -127,6 +149,10 @@ func _pick_word_from_hand(index: int) -> void:
     _evaluate_selected_line()
 
 func _evaluate_selected_line() -> void:
+  if awaiting_round_continue:
+    print("feedback is open, press continue to move on")
+    return
+
   if selected_speech_line.is_empty():
     print("pick at least one word before evaluation")
     return
@@ -135,14 +161,29 @@ func _evaluate_selected_line() -> void:
     print("no active question, press enter to start a round")
     return
 
-  var round_score = evaluate_speech(selected_speech_line)
+  var result = evaluate_speech(selected_speech_line)
+  var round_score = result["score"]
+
   total_score += round_score
   answered_questions += 1
 
+  last_round_score = round_score
+  last_round_combo_names = result["combo_names"]
+  last_round_tone_matches = result["tone_matches"]
+  last_round_speech_text = result["speech_text"]
+  awaiting_round_continue = true
+
   print("round score: ", round_score)
   print("total score after ", answered_questions, " questions: ", total_score)
+  print("press enter or continue to see the next question")
 
   selected_speech_line.clear()
+
+func continue_to_next_question() -> void:
+  if not awaiting_round_continue:
+    return
+
+  awaiting_round_continue = false
   current_question = null
   _start_new_round()
 
@@ -317,12 +358,21 @@ func can_form_sentence(hand: Array[WordData]) -> bool:
   return not (setups.is_empty() or bridges.is_empty() or punchlines.is_empty())
 
 func spin_again() -> void:
+  if awaiting_round_continue:
+    print("cannot spin while feedback is open")
+    return
+
   trust_vs_confusion -= 10
   deal_hand()
 
-func evaluate_speech(line: Array[WordData]) -> float:
+func evaluate_speech(line: Array[WordData]) -> Dictionary:
   if line.is_empty():
-    return 0.0
+    return {
+      "score": 0.0,
+      "combo_names": [],
+      "tone_matches": 0,
+      "speech_text": ""
+    }
 
   var speech_parts: Array[String] = []
   for word in line:
@@ -378,8 +428,8 @@ func evaluate_speech(line: Array[WordData]) -> float:
 
   if repeated_text_count > 0:
     trust_delta -= 5.0 * repeated_text_count
-    hype_delta += 3.0 * repeated_text_count
-    print("style note: repeated words increase meme energy")
+    hype_delta -= 4.0 * repeated_text_count
+    print("style note: repeated words flatten crowd energy")
 
   var combo_result = _resolve_combos(categories)
   trust_delta += combo_result["trust"]
@@ -413,6 +463,13 @@ func evaluate_speech(line: Array[WordData]) -> float:
   elif length_modifier < 0.0:
     print("length penalty: ramble risk")
 
+  var hype_fatigue = (hype_vs_meme - 50.0) * 0.35
+  if hype_fatigue > 0.0:
+    print("crowd fatigue: hype momentum is cooling off")
+  elif hype_fatigue < 0.0:
+    print("crowd recovery: low energy makes spikes easier")
+  hype_delta -= hype_fatigue
+
   var raw_score = 50.0 + trust_delta + hype_delta + tone_bonus + length_modifier
   var length_factor = _get_length_factor(line.size())
   var round_score = max(0.0, raw_score / length_factor)
@@ -421,26 +478,31 @@ func evaluate_speech(line: Array[WordData]) -> float:
   print("tone matches: ", tone_match_count, " tone bonus: ", tone_bonus)
   print("length factor: ", length_factor)
 
-  trust_vs_confusion = clamp(trust_vs_confusion + trust_delta / length_factor, 0.0, 100.0)
-  hype_vs_meme = clamp(hype_vs_meme + hype_delta / length_factor, 0.0, 100.0)
+  trust_vs_confusion = _apply_meter_delta(trust_vs_confusion, trust_delta / length_factor)
+  hype_vs_meme = _apply_meter_delta(hype_vs_meme, hype_delta / length_factor)
 
   _print_curr_audience_reaction()
-  return round_score
+  return {
+    "score": round_score,
+    "combo_names": combo_result["names"],
+    "tone_matches": tone_match_count,
+    "speech_text": speech_text
+  }
 
 func _get_base_word_effect(category_value: int) -> Dictionary:
   match category_value:
     WordData.Category.POLICY:
-      return {"trust": 12.0, "hype": -2.0}
+      return {"trust": 12.0, "hype": -6.0}
     WordData.Category.ABSURD:
-      return {"trust": -14.0, "hype": 10.0}
+      return {"trust": -14.0, "hype": -10.0}
     WordData.Category.EMOTIONAL:
-      return {"trust": 4.0, "hype": 14.0}
+      return {"trust": 4.0, "hype": 10.0}
     WordData.Category.ACTION:
-      return {"trust": -2.0, "hype": 12.0}
+      return {"trust": -2.0, "hype": 8.0}
     WordData.Category.RHETORICAL:
-      return {"trust": 8.0, "hype": 4.0}
+      return {"trust": 8.0, "hype": 2.0}
     WordData.Category.CLOSER:
-      return {"trust": 6.0, "hype": 6.0}
+      return {"trust": 6.0, "hype": 4.0}
     _:
       return {"trust": 0.0, "hype": 0.0}
 
@@ -461,33 +523,35 @@ func _get_position_weight(index: int) -> float:
 
 func _get_transition_effect(from_category: int, to_category: int) -> Dictionary:
   if from_category == WordData.Category.RHETORICAL and to_category == WordData.Category.ABSURD:
-    return {"trust": 10.0, "hype": 8.0, "message": "flow bonus: smooth setup hides nonsense"}
+    return {"trust": 10.0, "hype": -6.0, "message": "flow bonus: smooth setup hides nonsense"}
   if from_category == WordData.Category.RHETORICAL and to_category == WordData.Category.POLICY:
     return {"trust": 9.0, "hype": 2.0, "message": "flow bonus: strong rhetorical setup"}
   if from_category == WordData.Category.ACTION and to_category == WordData.Category.CLOSER:
-    return {"trust": 8.0, "hype": 12.0, "message": "flow bonus: decisive finish"}
+    return {"trust": 8.0, "hype": 8.0, "message": "flow bonus: decisive finish"}
   if from_category == WordData.Category.ABSURD and to_category == WordData.Category.CLOSER:
-    return {"trust": -10.0, "hype": 10.0, "message": "flow shift: absurd bridge into confident close"}
+    return {"trust": -10.0, "hype": -4.0, "message": "flow shift: absurd bridge into confident close"}
   if from_category == WordData.Category.POLICY and to_category == WordData.Category.EMOTIONAL:
-    return {"trust": 6.0, "hype": 8.0, "message": "flow bonus: facts into empathy"}
+    return {"trust": 6.0, "hype": 6.0, "message": "flow bonus: facts into empathy"}
   if from_category == WordData.Category.EMOTIONAL and to_category == WordData.Category.POLICY:
-    return {"trust": 7.0, "hype": 1.0, "message": "flow bonus: emotional setup grounded by policy"}
+    return {"trust": 7.0, "hype": -3.0, "message": "flow bonus: emotional setup grounded by policy"}
+  if from_category == WordData.Category.POLICY and to_category == WordData.Category.POLICY:
+    return {"trust": 4.0, "hype": -6.0, "message": "flow note: policy stack feels dry"}
   return {"trust": 0.0, "hype": 0.0, "message": ""}
 
 func _resolve_combos(categories: Array[int]) -> Dictionary:
   var combo_definitions = [
-    {"name": "the scapegoat", "pattern": [3, 1, 2], "trust": -10.0, "hype": 30.0},
+    {"name": "the scapegoat", "pattern": [3, 1, 2], "trust": -10.0, "hype": 12.0},
     {"name": "the empty promise", "pattern": [4, 0, 5], "trust": 25.0, "hype": -10.0},
-    {"name": "the debate dodge", "pattern": [4, 1, 5], "trust": -20.0, "hype": 24.0},
+    {"name": "the debate dodge", "pattern": [4, 1, 5], "trust": -20.0, "hype": 8.0},
     {"name": "the spreadsheet sermon", "pattern": [0, 0, 5], "trust": 22.0, "hype": -14.0},
-    {"name": "the rally cry", "pattern": [3, 2, 5], "trust": 8.0, "hype": 24.0},
-    {"name": "the fever dream", "pattern": [1, 1, 2], "trust": -24.0, "hype": 30.0},
+    {"name": "the rally cry", "pattern": [3, 2, 5], "trust": 8.0, "hype": 14.0},
+    {"name": "the fever dream", "pattern": [1, 1, 2], "trust": -24.0, "hype": -18.0},
     {"name": "the pivot sprint", "pattern": [4, 3, 0], "trust": 14.0, "hype": 10.0},
     {"name": "the heartland memo", "pattern": [2, 0, 5], "trust": 18.0, "hype": 8.0},
-    {"name": "the whiplash agenda", "pattern": [3, 0, 3], "trust": -12.0, "hype": 16.0},
-    {"name": "the teleprompter loop", "pattern": [5, 4, 5], "trust": 10.0, "hype": -6.0},
-    {"name": "the slogan loop", "pattern": [4, 4], "trust": 4.0, "hype": 9.0},
-    {"name": "the red button", "pattern": [3, 3], "trust": -8.0, "hype": 14.0}
+    {"name": "the whiplash agenda", "pattern": [3, 0, 3], "trust": -12.0, "hype": 10.0},
+    {"name": "the teleprompter loop", "pattern": [5, 4, 5], "trust": 10.0, "hype": -8.0},
+    {"name": "the slogan loop", "pattern": [4, 4], "trust": 4.0, "hype": 5.0},
+    {"name": "the red button", "pattern": [3, 3], "trust": -8.0, "hype": 8.0}
   ]
 
   var total_trust = 0.0
@@ -532,6 +596,15 @@ func _get_length_modifier(length: int) -> float:
       return -10.0
     _:
       return -15.0
+
+func _apply_meter_delta(current_value: float, delta: float) -> float:
+  var scaled_delta = delta
+  if scaled_delta > 0.0:
+    scaled_delta *= (100.0 - current_value) / 100.0
+  elif scaled_delta < 0.0:
+    scaled_delta *= current_value / 100.0
+
+  return clamp(current_value + scaled_delta, 0.0, 100.0)
 
 func _get_length_factor(length: int) -> float:
   match length:

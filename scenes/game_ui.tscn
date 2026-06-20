@@ -1,0 +1,202 @@
+[gd_scene format=3 uid="uid://fsvnsvpeu5uh"]
+
+[ext_resource type="Script" uid="uid://r3oirib57nku" path="res://scripts/game_ui.gd" id="1_yubou"]
+
+[node name="main_game_ui" type="Control" unique_id=578526238]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yubou")
+
+[node name="feedback_panel" type="PanelContainer" parent="." unique_id=1888442137]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -161.5
+offset_top = -205.0
+offset_right = 161.5
+offset_bottom = 205.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+
+[node name="feedback_vbox" type="VBoxContainer" parent="feedback_panel" unique_id=1738611786]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 6
+
+[node name="feedback_title_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=168316433]
+layout_mode = 2
+text = "round feedback"
+
+[node name="round_score_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1112857421]
+layout_mode = 2
+text = "round score: 0"
+
+[node name="speech_result_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1933944224]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+text = "your line: \"\""
+autowrap_mode = 3
+
+[node name="combo_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1983682300]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+text = "combos: none"
+autowrap_mode = 3
+
+[node name="tone_match_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1840150367]
+layout_mode = 2
+text = "tone matches: 0"
+
+[node name="continue_button" type="Button" parent="feedback_panel/feedback_vbox" unique_id=1161228677]
+layout_mode = 2
+size_flags_vertical = 10
+text = "continue"
+
+[node name="meters_container" type="HBoxContainer" parent="." unique_id=1468048025]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -177.0
+offset_right = -10.0
+offset_bottom = 177.0
+grow_horizontal = 0
+grow_vertical = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 10
+
+[node name="trust_container" type="VBoxContainer" parent="meters_container" unique_id=851716807]
+layout_mode = 2
+
+[node name="trust_label" type="Label" parent="meters_container/trust_container" unique_id=571232824]
+layout_mode = 2
+text = "trust"
+horizontal_alignment = 1
+
+[node name="trust_meter" type="ProgressBar" parent="meters_container/trust_container" unique_id=1340284854]
+custom_minimum_size = Vector2(20, 300)
+layout_mode = 2
+size_flags_horizontal = 4
+fill_mode = 3
+show_percentage = false
+
+[node name="confusion_label" type="Label" parent="meters_container/trust_container" unique_id=1105882987]
+layout_mode = 2
+text = "confusion"
+horizontal_alignment = 1
+
+[node name="vibe_container" type="VBoxContainer" parent="meters_container" unique_id=1496439919]
+layout_mode = 2
+
+[node name="hype_label" type="Label" parent="meters_container/vibe_container" unique_id=1153712801]
+layout_mode = 2
+text = "hype"
+horizontal_alignment = 1
+
+[node name="vibe_meter" type="ProgressBar" parent="meters_container/vibe_container" unique_id=2110553957]
+custom_minimum_size = Vector2(20, 300)
+layout_mode = 2
+size_flags_horizontal = 4
+fill_mode = 3
+show_percentage = false
+
+[node name="meme_label" type="Label" parent="meters_container/vibe_container" unique_id=2079541001]
+layout_mode = 2
+text = "meme"
+horizontal_alignment = 1
+
+[node name="layout_container" type="VBoxContainer" parent="." unique_id=248683926]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -157.5
+offset_top = -62.0
+offset_right = 157.5
+offset_bottom = 62.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="question_panel" type="PanelContainer" parent="layout_container" unique_id=1411885332]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+
+[node name="question_vbox" type="VBoxContainer" parent="layout_container/question_panel" unique_id=148369496]
+layout_mode = 2
+
+[node name="question_text_label" type="Label" parent="layout_container/question_panel/question_vbox" unique_id=913435782]
+layout_mode = 2
+
+[node name="question_tone_label" type="Label" parent="layout_container/question_panel/question_vbox" unique_id=930128847]
+layout_mode = 2
+
+[node name="speech_preview_label" type="Label" parent="layout_container" unique_id=1036993929]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="hand_container" type="HBoxContainer" parent="layout_container" unique_id=1304734608]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="card_0" type="Button" parent="layout_container/hand_container" unique_id=1724107495]
+layout_mode = 2
+
+[node name="card_1" type="Button" parent="layout_container/hand_container" unique_id=487554518]
+layout_mode = 2
+
+[node name="card_2" type="Button" parent="layout_container/hand_container" unique_id=225027568]
+layout_mode = 2
+
+[node name="card_3" type="Button" parent="layout_container/hand_container" unique_id=1996258460]
+layout_mode = 2
+
+[node name="card_4" type="Button" parent="layout_container/hand_container" unique_id=1566128451]
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="layout_container" unique_id=2025702977]
+layout_mode = 2
+
+[node name="actions_container" type="HBoxContainer" parent="layout_container" unique_id=112850873]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="respin_button" type="Button" parent="layout_container/actions_container" unique_id=877778658]
+layout_mode = 2
+text = "spin again"
+
+[node name="clear_button" type="Button" parent="layout_container/actions_container" unique_id=1751212860]
+layout_mode = 2
+text = "clear words"
+
+[node name="submit_button" type="Button" parent="layout_container/actions_container" unique_id=977557034]
+layout_mode = 2
+text = "deliver answer"
+
+[node name="hud_row" type="HBoxContainer" parent="layout_container" unique_id=410038514]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="score_label" type="Label" parent="layout_container/hud_row" unique_id=1947701201]
+layout_mode = 2
+text = "total score: 0"
+
+[node name="answered_label" type="Label" parent="layout_container/hud_row" unique_id=995864730]
+layout_mode = 2
+text = "questions answered: 0"
