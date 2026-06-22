@@ -1,7 +1,5 @@
 extends Node
 
-signal hand_invalid
-
 @export var master_word_bank: Array[WordData] = []
 @export var master_question_bank: Array[QuestionData] = []
 
@@ -25,7 +23,7 @@ func _ready() -> void:
   load_words_from_json("res://data/words.json")
   load_questions_from_json("res://data/questions.json")
   _ensure_test_input_actions()
-  print("console test controls: enter=start round, 1-5=pick word, e=submit answer (1-5 words), r=spin again, c=clear picks")
+  print("console test controls: enter=start round, 1-5=pick word, e=submit answer (1-5 words), r=spin random card, c=clear picks")
 
 func _process(_delta: float) -> void:
   if Input.is_action_just_pressed("ui_accept"):
@@ -53,9 +51,13 @@ func _process(_delta: float) -> void:
     _evaluate_selected_line()
 
   if Input.is_action_just_pressed("test_spin"):
-    print("manual spin triggered")
-    spin_again()
-    _print_current_hand()
+    if current_hand.is_empty():
+      print("no hand active, press enter to deal")
+    else:
+      var random_index := randi() % current_hand.size()
+      print("manual card spin triggered at slot ", random_index + 1)
+      spin_card_at_index(random_index)
+      _print_current_hand()
 
   if Input.is_action_just_pressed("test_clear"):
     selected_speech_line.clear()
@@ -205,12 +207,6 @@ func _category_to_text(category_value: int) -> String:
     return "unknown"
   return String(keys[category_value]).to_lower()
 
-func _find_word_by_text(search_text: String) -> WordData:
-  for word in master_word_bank:
-    if word.text == search_text:
-      return word
-  return null
-
 func load_words_from_json(path: String) -> void:
   if not FileAccess.file_exists(path):
     push_error("json file not found at: ", path)
@@ -292,43 +288,6 @@ func load_questions_from_json(path: String) -> void:
 
   print("successfully loaded ", master_question_bank.size(), " questions from json")
 
-# func deal_hand() -> void:
-#   current_hand.clear()
-#   selected_speech_line.clear()
-
-#   var setups: Array[WordData] = []
-#   var bridges: Array[WordData] = []
-#   var punchlines: Array[WordData] = []
-
-#   for word in master_word_bank:
-#     match word.category:
-#       WordData.Category.RHETORICAL, WordData.Category.ACTION:
-#         setups.append(word)
-#       WordData.Category.POLICY, WordData.Category.ABSURD:
-#         bridges.append(word)
-#       WordData.Category.EMOTIONAL, WordData.Category.CLOSER:
-#         punchlines.append(word)
-
-#   if setups.is_empty() or bridges.is_empty() or punchlines.is_empty():
-#     push_error("master word bank is missing categories")
-#     return
-
-#   setups.shuffle()
-#   bridges.shuffle()
-#   punchlines.shuffle()
-
-#   current_hand.append(setups[0])
-#   current_hand.append(setups[1])
-#   current_hand.append(bridges[0])
-#   current_hand.append(bridges[1])
-#   current_hand.append(punchlines[0])
-
-#   current_hand.shuffle()
-
-#   print("new hand dealt")
-#   for i in range(current_hand.size()):
-#     print(str(i) + ": [" + current_hand[i].text + "] type: " + str(current_hand[i].category))
-
 func deal_hand() -> void:
   current_hand.clear()
   
@@ -337,9 +296,6 @@ func deal_hand() -> void:
   
   for i in range(5):
     current_hand.append(shuffled_pool[i])
-  
-  if not can_form_sentence(current_hand):
-    emit_signal("hand_invalid")
 
 func can_form_sentence(hand: Array[WordData]) -> bool:
   var setups: Array[WordData] = []
@@ -357,10 +313,45 @@ func can_form_sentence(hand: Array[WordData]) -> bool:
   
   return not (setups.is_empty() or bridges.is_empty() or punchlines.is_empty())
 
+func _get_random_replacement_for_category(category_value: int) -> WordData:
+  var candidates: Array[WordData] = []
+  for word in master_word_bank:
+    if word.category == category_value and not current_hand.has(word):
+      candidates.append(word)
+
+  if candidates.is_empty():
+    return null
+
+  return candidates[randi() % candidates.size()]
+
+func spin_card_at_index(index: int) -> void:
+  if awaiting_round_continue:
+    print("cannot spin while feedback is open")
+    return
+
+  if index < 0 or index >= current_hand.size():
+    print("invalid card index for spin")
+    return
+
+  var original_word = current_hand[index]
+  var replacement_word = _get_random_replacement_for_category(original_word.category)
+  if replacement_word == null:
+    print("no replacement found for category, cannot spin this card")
+    return
+  
+  trust_vs_confusion -= 10
+
+  current_hand[index] = replacement_word
+  selected_speech_line.erase(original_word)
+  print("spun card ", index + 1, " from ", original_word.text, " to ", replacement_word.text)
+
 func spin_again() -> void:
   if awaiting_round_continue:
     print("cannot spin while feedback is open")
     return
+
+  current_hand.clear()
+  selected_speech_line.clear()
 
   trust_vs_confusion -= 10
   deal_hand()

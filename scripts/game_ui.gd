@@ -5,7 +5,6 @@ extends Control
 @onready var question_lbl: Label = $layout_container/question_panel/question_vbox/question_text_label
 @onready var tone_lbl: Label = $layout_container/question_panel/question_vbox/question_tone_label
 @onready var preview_lbl: Label = $layout_container/speech_preview_label
-@onready var spin_btn: Button = $layout_container/actions_container/respin_button
 @onready var submit_btn: Button = $layout_container/actions_container/submit_button
 @onready var clear_btn: Button = $layout_container/actions_container/clear_button
 @onready var continue_btn: Button = $feedback_panel/feedback_vbox/continue_button
@@ -29,11 +28,11 @@ extends Control
 
 func _ready():
   for i in range(hand_buttons.size()):
-    hand_buttons[i].pressed.connect(func(): _on_card_selected(i))
+    hand_buttons[i].pressed.connect(_on_card_selected.bind(i))
+    hand_buttons[i].gui_input.connect(_on_card_gui_input.bind(i))
 
   clear_btn.pressed.connect(_on_clear_pressed)
   submit_btn.pressed.connect(_on_submit_pressed)
-  spin_btn.pressed.connect(_on_respin_pressed)
   continue_btn.pressed.connect(_on_continue_pressed)
 
   GameManager._start_new_round()
@@ -58,10 +57,12 @@ func _update_ui_display():
   feedback_panel.visible = GameManager.awaiting_round_continue
   meters_container.visible = not GameManager.awaiting_round_continue
   layout_container.visible = not GameManager.awaiting_round_continue
+  
   if GameManager.awaiting_round_continue:
     round_score_lbl.text = "round score: " + str(int(round(GameManager.last_round_score)))
     speech_result_lbl.text = "your line: \"" + GameManager.last_round_speech_text + "\""
     tone_match_lbl.text = "tone matches: " + str(GameManager.last_round_tone_matches)
+    
     if GameManager.last_round_combo_names.is_empty():
       combo_lbl.text = "combos: none"
     else:
@@ -85,7 +86,6 @@ func _update_ui_display():
 
   var lock_inputs = GameManager.awaiting_round_continue
   submit_btn.disabled = lock_inputs
-  spin_btn.disabled = lock_inputs
   clear_btn.disabled = lock_inputs
 
   trust_meter.value = GameManager.trust_vs_confusion
@@ -95,9 +95,10 @@ func _on_card_selected(index):
   GameManager._pick_word_from_hand(index)
   _update_ui_display()
 
-func _on_respin_pressed():
-  GameManager.spin_again()
-  _update_ui_display()
+func _on_card_gui_input(event: InputEvent, index: int):
+  if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+    GameManager.spin_card_at_index(index)
+    _update_ui_display()
 
 func _on_clear_pressed():
   GameManager.selected_speech_line.clear()

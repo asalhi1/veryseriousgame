@@ -177,10 +177,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="respin_button" type="Button" parent="layout_container/actions_container" unique_id=877778658]
-layout_mode = 2
-text = "spin again"
-
 [node name="clear_button" type="Button" parent="layout_container/actions_container" unique_id=1751212860]
 layout_mode = 2
 text = "clear words"
