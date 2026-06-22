@@ -146,10 +146,6 @@ func _pick_word_from_hand(index: int) -> void:
   print("picked slot ", index + 1, ": ", chosen_word.text, " (", _category_to_text(chosen_word.category), ")")
   _print_selected_line_preview()
 
-  if selected_speech_line.size() == 5:
-    print("max words selected, auto-submitting")
-    _evaluate_selected_line()
-
 func _evaluate_selected_line() -> void:
   if awaiting_round_continue:
     print("feedback is open, press continue to move on")
@@ -196,10 +192,7 @@ func _print_current_hand() -> void:
     print(str(i + 1), ": ", word.text, " (", _category_to_text(word.category), ")")
 
 func _print_selected_line_preview() -> void:
-  var parts: Array[String] = []
-  for word in selected_speech_line:
-    parts.append(word.text)
-  print("current answer (", selected_speech_line.size(), "/5): ", " ".join(parts))
+  print("current answer (", selected_speech_line.size(), "/5): ", build_sentence(selected_speech_line))
 
 func _category_to_text(category_value: int) -> String:
   var keys := WordData.Category.keys()
@@ -298,20 +291,73 @@ func deal_hand() -> void:
     current_hand.append(shuffled_pool[i])
 
 func can_form_sentence(hand: Array[WordData]) -> bool:
-  var setups: Array[WordData] = []
-  var bridges: Array[WordData] = []
-  var punchlines: Array[WordData] = []
+  var rhe: Array[WordData] = []
+  var act: Array[WordData] = []
+  var pol: Array[WordData] = []
+  var absu: Array[WordData] = []
+  var emo: Array[WordData] = []
+  var clo: Array[WordData] = []
 
   for word in hand:
     match word.category:
-      WordData.Category.RHETORICAL, WordData.Category.ACTION:
-        setups.append(word)
-      WordData.Category.POLICY, WordData.Category.ABSURD:
-        bridges.append(word)
-      WordData.Category.EMOTIONAL, WordData.Category.CLOSER:
-        punchlines.append(word)
+      WordData.Category.RHETORICAL:
+        rhe.append(word)
+      WordData.Category.ACTION:
+        act.append(word)
+      WordData.Category.POLICY:
+        pol.append(word)
+      WordData.Category.ABSURD:
+        absu.append(word)
+      WordData.Category.EMOTIONAL:
+        emo.append(word)
+      WordData.Category.CLOSER:
+        clo.append(word)
   
-  return not (setups.is_empty() or bridges.is_empty() or punchlines.is_empty())
+  # need at least action + one other category to form a valid sentence
+  return not (act.is_empty() or (rhe.is_empty() and pol.is_empty() and absu.is_empty() and emo.is_empty() and clo.is_empty()))
+
+func build_sentence(line: Array[WordData]) -> String:
+  if line.is_empty():
+    return ""
+
+  var rhetorical := ""
+  var action := ""
+  var target := ""
+  var delivery := ""
+  var closer := ""
+
+  for word in line:
+    match word.category:
+      WordData.Category.RHETORICAL:
+        rhetorical = word.text
+      WordData.Category.ACTION:
+        action = word.text
+      WordData.Category.POLICY, WordData.Category.ABSURD:
+        target = word.text
+      WordData.Category.EMOTIONAL:
+        delivery = word.text
+      WordData.Category.CLOSER:
+        closer = word.text
+
+  var sentence := ""
+  if rhetorical != "":
+    sentence += rhetorical + " "
+  if action != "":
+    sentence += action + " "
+  if target != "":
+    sentence += target + " "
+  sentence = sentence.strip_edges()
+  if delivery != "":
+    sentence += " " + delivery
+
+  sentence = sentence.strip_edges()
+  if closer != "":
+    if closer.begins_with(",") or closer.begins_with("."):
+      sentence += closer
+    else:
+      sentence += ", " + closer
+
+  return sentence
 
 func _get_random_replacement_for_category(category_value: int) -> WordData:
   var candidates: Array[WordData] = []
@@ -365,10 +411,7 @@ func evaluate_speech(line: Array[WordData]) -> Dictionary:
       "speech_text": ""
     }
 
-  var speech_parts: Array[String] = []
-  for word in line:
-    speech_parts.append(word.text)
-  var speech_text = " ".join(speech_parts)
+  var speech_text = build_sentence(line)
   print("player says: \"" + speech_text + "\"")
 
   var trust_delta = 0.0
