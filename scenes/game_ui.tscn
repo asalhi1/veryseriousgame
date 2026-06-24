@@ -42,24 +42,6 @@ theme_override_constants/margin_top = 60
 theme_override_constants/margin_right = 60
 theme_override_constants/margin_bottom = 10
 
-[node name="speech_preview_strip" type="TextureRect" parent="MarginContainer" unique_id=1744704682]
-custom_minimum_size = Vector2(100, 200)
-layout_mode = 2
-
-[node name="active_sentence_lbl" type="Label" parent="MarginContainer/speech_preview_strip" unique_id=1172833583]
-layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = 455.5
-offset_bottom = 522.5
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="main_vertical_stack" type="VBoxContainer" parent="MarginContainer" unique_id=1870576558]
 layout_mode = 2
 
@@ -74,21 +56,31 @@ layout_mode = 2
 layout_mode = 2
 texture = ExtResource("1_sjwyb")
 
-[node name="wheel_bg" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=1297004607]
+[node name="wheel_spinner" type="TextureButton" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=963198117]
+z_index = 1
 layout_mode = 2
-texture = ExtResource("2_1kaiv")
-
-[node name="wheel_spinner" type="TextureButton" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/wheel_bg" unique_id=963198117]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 texture_normal = ExtResource("2_5kh4o")
-stretch_mode = 5
+
+[node name="wheel_bg" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/wheel_spinner" unique_id=1297004607]
+z_index = -1
+layout_mode = 0
+offset_left = 130.0
+offset_top = 145.0
+offset_right = 1880.0
+offset_bottom = 1865.0
+pivot_offset_ratio = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("2_1kaiv")
+stretch_mode = 2
+
+[node name="black_rect" type="ColorRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=828630592]
+z_index = 2
+layout_mode = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
 
 [node name="feed_panel" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/top_half_view" unique_id=627619485]
 layout_mode = 2
@@ -135,6 +127,9 @@ theme_override_constants/margin_bottom = 50
 [node name="question_lbl" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/reporter_bubble/margin" unique_id=1087822484]
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.49803922)
+theme_override_constants/outline_size = 48
+theme_override_font_sizes/font_size = 156
 autowrap_mode = 3
 
 [node name="game_clock" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display" unique_id=364022152]
@@ -186,7 +181,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Confusion"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="trust_bar" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1262027675]
@@ -200,7 +195,6 @@ texture_progress = ExtResource("7_ihktq")
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Trust"
-horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="vibe_area" type="HBoxContainer" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout" unique_id=1145584318]
@@ -211,7 +205,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Meme"
-horizontal_alignment = 1
+horizontal_alignment = 2
 
 [node name="vibe_bar" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=71513224]
 layout_mode = 2
@@ -224,7 +218,6 @@ texture_progress = ExtResource("8_igvt4")
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Hype"
-horizontal_alignment = 1
 
 [node name="hand_mat" type="TextureRect" parent="MarginContainer/main_vertical_stack" unique_id=99495889]
 layout_mode = 2
@@ -341,12 +334,24 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Deliver Speech"
 
+[node name="active_sentence_lbl" type="Label" parent="." unique_id=1172833583]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 2260.0
+offset_right = 6350.0
+offset_bottom = 2362.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+text = "Hello World"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Politician" type="Sprite2D" parent="." unique_id=196798341]
-position = Vector2(2861, 904)
+position = Vector2(2925, 959)
 texture = ExtResource("15_ihktq")
 
 [node name="PoliticianAndHand" type="Sprite2D" parent="." unique_id=1742819333]
-position = Vector2(2901, 1198)
+position = Vector2(2995, 1284)
 texture = ExtResource("15_upmhx")
 
 [node name="frame" type="TextureRect" parent="." unique_id=1168869136]

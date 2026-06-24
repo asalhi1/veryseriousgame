@@ -1,5 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://3jqnahcsf764"]
 
+[ext_resource type="FontFile" uid="uid://bvltc2d01r74g" path="res://assets/TinyUnicode.ttf" id="1_cjfk0"]
 [ext_resource type="Texture2D" uid="uid://bmbknfxpgofse" path="res://assets/art/crowd bubble.png" id="1_e1x85"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g4v7s"]
@@ -10,7 +11,10 @@ texture_margin_right = 20.0
 texture_margin_bottom = 60.0
 
 [resource]
-default_font_size = 48
+default_font_size = 128
 Label/colors/font_color = Color(0, 0, 0, 1)
-Label/colors/font_outline_color = Color(1, 1, 1, 1)
+Label/colors/font_outline_color = Color(1, 1, 1, 0.49803922)
+Label/constants/outline_size = 24
+Label/font_sizes/font_size = 128
+Label/fonts/font = ExtResource("1_cjfk0")
 Panel/styles/panel = SubResource("StyleBoxTexture_g4v7s")
