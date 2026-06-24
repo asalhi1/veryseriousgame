@@ -3,6 +3,15 @@ extends Node
 @export var master_word_bank: Array[WordData] = []
 @export var master_question_bank: Array[QuestionData] = []
 
+@export var category_colors: Array[Color] = [
+  Color(0.35, 0.75, 1.0, 1.0),
+  Color(1.0, 0.55, 0.35, 1.0),
+  Color(1.0, 0.35, 0.6, 1.0),
+  Color(0.45, 1.0, 0.5, 1.0),
+  Color(0.95, 0.85, 0.35, 1.0),
+  Color(0.75, 0.7, 1.0, 1.0)
+]
+
 var current_hand: Array[WordData] = []
 var selected_speech_line: Array[WordData] = []
 var current_question: QuestionData = null
@@ -18,6 +27,10 @@ var last_round_combo_names: Array[String] = []
 var last_round_tone_matches: int = 0
 var last_round_speech_text: String = ""
 
+var game_over : bool = false
+@export var match_length: float = 120.0 #seconds
+var time_left : float = match_length
+
 func _ready() -> void:
   randomize()
   load_words_from_json("res://data/words.json")
@@ -26,6 +39,14 @@ func _ready() -> void:
   print("console test controls: enter=start round, 1-5=pick word, e=submit answer (1-5 words), r=spin random card, c=clear picks")
 
 func _process(_delta: float) -> void:
+  if game_over:
+    return
+
+  if not awaiting_round_continue:
+    time_left -= _delta
+    if time_left <= 0.0:
+      ending("time's up", "the press conference is over")
+
   if Input.is_action_just_pressed("ui_accept"):
     if awaiting_round_continue:
       continue_to_next_question()
@@ -176,6 +197,11 @@ func _evaluate_selected_line() -> void:
   print("press enter or continue to see the next question")
 
   selected_speech_line.clear()
+
+func ending(reason_title: String, reason_message: String) -> void:
+  game_over = true
+  print("game over: ", reason_title, " - ", reason_message)
+  emit_signal("game_ended", reason_title, reason_message)
 
 func continue_to_next_question() -> void:
   if not awaiting_round_continue:

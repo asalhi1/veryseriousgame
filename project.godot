@@ -21,8 +21,16 @@ GameManager="*uid://1uxt3tiosmev"
 
 [display]
 
+window/size/viewport_width=6400
+window/size/viewport_height=3600
+window/size/mode=3
+window/size/window_width_override=1280
+window/size/window_height_override=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom="uid://3jqnahcsf764"
 
 [physics]
 

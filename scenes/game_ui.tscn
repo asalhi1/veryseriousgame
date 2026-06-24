@@ -1,8 +1,27 @@
 [gd_scene format=3 uid="uid://fsvnsvpeu5uh"]
 
+[ext_resource type="Texture2D" uid="uid://1utth802a2e7" path="res://assets/art/phone.png" id="1_sjwyb"]
 [ext_resource type="Script" uid="uid://r3oirib57nku" path="res://scripts/game_ui.gd" id="1_yubou"]
+[ext_resource type="Texture2D" uid="uid://qtinoiqj8tgj" path="res://assets/art/spinning part of the wheel.png" id="2_1kaiv"]
+[ext_resource type="Texture2D" uid="uid://fnlnorc7knss" path="res://assets/art/fix part of the wheel.png" id="2_5kh4o"]
+[ext_resource type="Texture2D" uid="uid://dgsr3ra7porel" path="res://assets/art/crowd.png" id="3_s2npe"]
+[ext_resource type="Texture2D" uid="uid://4xe2gmtbqnb1" path="res://assets/art/time bar.png" id="5_1kaiv"]
+[ext_resource type="Texture2D" uid="uid://b7eacir6kecbf" path="res://assets/art/pol background.png" id="5_2rmtt"]
+[ext_resource type="Texture2D" uid="uid://ufs7r3nry68o" path="res://assets/art/bars holder.png" id="6_upmhx"]
+[ext_resource type="Texture2D" uid="uid://cuqbslnbprah2" path="res://assets/art/time bar background.png" id="6_x8pta"]
+[ext_resource type="Texture2D" uid="uid://dt87dlj1dege3" path="res://assets/art/green bar.png" id="7_ihktq"]
+[ext_resource type="Texture2D" uid="uid://djuc3du5cfslo" path="res://assets/art/red bar.png" id="8_igvt4"]
+[ext_resource type="Texture2D" uid="uid://bhoqgb7fq73ju" path="res://assets/art/bar background.png" id="8_x8pta"]
+[ext_resource type="Texture2D" uid="uid://cw0rxf77y2wrh" path="res://assets/art/table and stuff.png" id="9_x8pta"]
+[ext_resource type="Texture2D" uid="uid://ddowqsovc4ghe" path="res://assets/art/normal button.png" id="11_upmhx"]
+[ext_resource type="PackedScene" uid="uid://4b8f7olqp122" path="res://scenes/card.tscn" id="12_ihktq"]
+[ext_resource type="Texture2D" uid="uid://csuj5kr8wlqfp" path="res://assets/art/red button.png" id="13_ihktq"]
+[ext_resource type="Texture2D" uid="uid://dma25smu1in2b" path="res://assets/art/green button.png" id="14_igvt4"]
+[ext_resource type="Texture2D" uid="uid://dleev70ae0unt" path="res://assets/art/politician.png" id="15_ihktq"]
+[ext_resource type="Texture2D" uid="uid://06opjnf7vmuf" path="res://assets/art/politician and hand.png" id="15_upmhx"]
+[ext_resource type="Texture2D" uid="uid://wniini2b0vqv" path="res://assets/art/frame.png" id="20_0dnje"]
 
-[node name="main_game_ui" type="Control" unique_id=578526238]
+[node name="main_game_ui" type="Control" unique_id=1794864033]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,188 +30,329 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_yubou")
 
-[node name="feedback_panel" type="PanelContainer" parent="." unique_id=1888442137]
-visible = false
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=683285676]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -161.5
-offset_top = -205.0
-offset_right = 161.5
-offset_bottom = 205.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
+theme_override_constants/margin_left = 60
+theme_override_constants/margin_top = 60
+theme_override_constants/margin_right = 60
+theme_override_constants/margin_bottom = 10
 
-[node name="feedback_vbox" type="VBoxContainer" parent="feedback_panel" unique_id=1738611786]
+[node name="speech_preview_strip" type="TextureRect" parent="MarginContainer" unique_id=1744704682]
+custom_minimum_size = Vector2(100, 200)
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/separation = 6
 
-[node name="feedback_title_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=168316433]
-layout_mode = 2
-text = "round feedback"
-
-[node name="round_score_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1112857421]
-layout_mode = 2
-text = "round score: 0"
-
-[node name="speech_result_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1933944224]
-custom_minimum_size = Vector2(20, 0)
-layout_mode = 2
-text = "your line: \"\""
-autowrap_mode = 3
-
-[node name="combo_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1983682300]
-custom_minimum_size = Vector2(20, 0)
-layout_mode = 2
-text = "combos: none"
-autowrap_mode = 3
-
-[node name="tone_match_label" type="Label" parent="feedback_panel/feedback_vbox" unique_id=1840150367]
-layout_mode = 2
-text = "tone matches: 0"
-
-[node name="continue_button" type="Button" parent="feedback_panel/feedback_vbox" unique_id=1161228677]
-layout_mode = 2
-size_flags_vertical = 10
-text = "continue"
-
-[node name="meters_container" type="HBoxContainer" parent="." unique_id=1468048025]
+[node name="active_sentence_lbl" type="Label" parent="MarginContainer/speech_preview_strip" unique_id=1172833583]
 layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
+anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -140.0
-offset_top = -177.0
-offset_right = -10.0
-offset_bottom = 177.0
-grow_horizontal = 0
+offset_top = 455.5
+offset_bottom = 522.5
+grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 8
-theme_override_constants/separation = 10
-
-[node name="trust_container" type="VBoxContainer" parent="meters_container" unique_id=851716807]
-layout_mode = 2
-
-[node name="trust_label" type="Label" parent="meters_container/trust_container" unique_id=571232824]
-layout_mode = 2
-text = "trust"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="trust_meter" type="ProgressBar" parent="meters_container/trust_container" unique_id=1340284854]
-custom_minimum_size = Vector2(20, 300)
+[node name="main_vertical_stack" type="VBoxContainer" parent="MarginContainer" unique_id=1870576558]
 layout_mode = 2
+
+[node name="top_half_view" type="HBoxContainer" parent="MarginContainer/main_vertical_stack" unique_id=1772061160]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="spin_panel" type="PanelContainer" parent="MarginContainer/main_vertical_stack/top_half_view" unique_id=1395907581]
+layout_mode = 2
+
+[node name="phone_display" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=2026731263]
+layout_mode = 2
+texture = ExtResource("1_sjwyb")
+
+[node name="wheel_bg" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=1297004607]
+layout_mode = 2
+texture = ExtResource("2_1kaiv")
+
+[node name="wheel_spinner" type="TextureButton" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/wheel_bg" unique_id=963198117]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 4
-fill_mode = 3
-show_percentage = false
+size_flags_vertical = 4
+texture_normal = ExtResource("2_5kh4o")
+stretch_mode = 5
 
-[node name="confusion_label" type="Label" parent="meters_container/trust_container" unique_id=1105882987]
+[node name="feed_panel" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/top_half_view" unique_id=627619485]
 layout_mode = 2
-text = "confusion"
-horizontal_alignment = 1
+size_flags_horizontal = 3
 
-[node name="vibe_container" type="VBoxContainer" parent="meters_container" unique_id=1496439919]
+[node name="crowd_display" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel" unique_id=1648876187]
 layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("5_2rmtt")
 
-[node name="hype_label" type="Label" parent="meters_container/vibe_container" unique_id=1153712801]
+[node name="crowd" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display" unique_id=1460767493]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -3650.0
+offset_top = -1210.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("3_s2npe")
+
+[node name="reporter_bubble" type="Panel" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display" unique_id=571053880]
+self_modulate = Color(1, 1, 1, 0.67058825)
+layout_mode = 0
+offset_left = 1300.0
+offset_top = 488.0
+offset_right = 3763.0
+offset_bottom = 1159.0
+
+[node name="margin" type="MarginContainer" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/reporter_bubble" unique_id=937322219]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="question_lbl" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/reporter_bubble/margin" unique_id=1087822484]
+custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-text = "hype"
-horizontal_alignment = 1
+autowrap_mode = 3
 
-[node name="vibe_meter" type="ProgressBar" parent="meters_container/vibe_container" unique_id=2110553957]
-custom_minimum_size = Vector2(20, 300)
-layout_mode = 2
-size_flags_horizontal = 4
-fill_mode = 3
-show_percentage = false
+[node name="game_clock" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display" unique_id=364022152]
+z_index = 7
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -1262.0
+offset_top = 9.0
+offset_right = -62.0
+offset_bottom = 219.0
+grow_horizontal = 0
+value = 100.0
+texture_under = ExtResource("6_x8pta")
+texture_progress = ExtResource("5_1kaiv")
 
-[node name="meme_label" type="Label" parent="meters_container/vibe_container" unique_id=2079541001]
-layout_mode = 2
-text = "meme"
-horizontal_alignment = 1
-
-[node name="layout_container" type="VBoxContainer" parent="." unique_id=248683926]
+[node name="timer_lbl" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/game_clock" unique_id=637174813]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -157.5
-offset_top = -62.0
-offset_right = 157.5
-offset_bottom = 62.0
+offset_left = -20.0
+offset_top = -33.5
+offset_right = 20.0
+offset_bottom = 33.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="question_panel" type="PanelContainer" parent="layout_container" unique_id=1411885332]
+[node name="metrics_bar" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel" unique_id=109498448]
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 0
+texture = ExtResource("6_upmhx")
 
-[node name="question_vbox" type="VBoxContainer" parent="layout_container/question_panel" unique_id=148369496]
+[node name="metrics_layout" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar" unique_id=4519775]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="trust_area" type="HBoxContainer" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout" unique_id=1891540341]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1984187762]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Confusion"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="trust_bar" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1262027675]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+texture_under = ExtResource("8_x8pta")
+texture_progress = ExtResource("7_ihktq")
+
+[node name="Label2" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1588345529]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Trust"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="vibe_area" type="HBoxContainer" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout" unique_id=1145584318]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=410985473]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Meme"
+horizontal_alignment = 1
+
+[node name="vibe_bar" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=71513224]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+texture_under = ExtResource("8_x8pta")
+texture_progress = ExtResource("8_igvt4")
+
+[node name="Label2" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=1147232735]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Hype"
+horizontal_alignment = 1
+
+[node name="hand_mat" type="TextureRect" parent="MarginContainer/main_vertical_stack" unique_id=99495889]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("9_x8pta")
+
+[node name="bottom_half_desk" type="HBoxContainer" parent="MarginContainer/main_vertical_stack/hand_mat" unique_id=18503319]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="left_utility_dock" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=749264858]
 layout_mode = 2
 
-[node name="question_text_label" type="Label" parent="layout_container/question_panel/question_vbox" unique_id=913435782]
+[node name="emergency_flush_btn" type="TextureButton" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=51952867]
+layout_mode = 2
+size_flags_vertical = 6
+texture_normal = ExtResource("11_upmhx")
+
+[node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/emergency_flush_btn" unique_id=1574701082]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -33.5
+offset_right = 20.0
+offset_bottom = 33.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Spin Again"
+
+[node name="round_counter_panel" type="PanelContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=969160955]
 layout_mode = 2
 
-[node name="question_tone_label" type="Label" parent="layout_container/question_panel/question_vbox" unique_id=930128847]
+[node name="hand_mat_center" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=52444428]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="hand_cards_center" type="HBoxContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/hand_mat_center" unique_id=1654621149]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -1508.0
+offset_top = -784.0
+offset_right = 1508.0
+offset_bottom = -84.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="card0" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/hand_mat_center/hand_cards_center" unique_id=692199455 instance=ExtResource("12_ihktq")]
 layout_mode = 2
 
-[node name="speech_preview_label" type="Label" parent="layout_container" unique_id=1036993929]
+[node name="card1" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/hand_mat_center/hand_cards_center" unique_id=1899109315 instance=ExtResource("12_ihktq")]
 layout_mode = 2
-size_flags_horizontal = 4
 
-[node name="hand_container" type="HBoxContainer" parent="layout_container" unique_id=1304734608]
+[node name="card2" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/hand_mat_center/hand_cards_center" unique_id=1806258668 instance=ExtResource("12_ihktq")]
 layout_mode = 2
-size_flags_horizontal = 4
+
+[node name="card3" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/hand_mat_center/hand_cards_center" unique_id=123908960 instance=ExtResource("12_ihktq")]
+layout_mode = 2
+
+[node name="card4" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/hand_mat_center/hand_cards_center" unique_id=1945527246 instance=ExtResource("12_ihktq")]
+layout_mode = 2
+
+[node name="right_actions_dock" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=1483229090]
+layout_mode = 2
 size_flags_vertical = 4
 
-[node name="card_0" type="Button" parent="layout_container/hand_container" unique_id=1724107495]
+[node name="clear_speech_btn" type="TextureButton" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock" unique_id=1359612176]
 layout_mode = 2
+texture_normal = ExtResource("13_ihktq")
 
-[node name="card_1" type="Button" parent="layout_container/hand_container" unique_id=487554518]
-layout_mode = 2
+[node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/clear_speech_btn" unique_id=1626612213]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -33.5
+offset_right = 20.0
+offset_bottom = 33.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Clear Speech"
 
-[node name="card_2" type="Button" parent="layout_container/hand_container" unique_id=225027568]
+[node name="deliver_speech_btn" type="TextureButton" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock" unique_id=1521336466]
 layout_mode = 2
+texture_normal = ExtResource("14_igvt4")
 
-[node name="card_3" type="Button" parent="layout_container/hand_container" unique_id=1996258460]
-layout_mode = 2
+[node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/deliver_speech_btn" unique_id=833745125]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -171.0
+offset_top = -33.5
+offset_right = 171.0
+offset_bottom = 33.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Deliver Speech"
 
-[node name="card_4" type="Button" parent="layout_container/hand_container" unique_id=1566128451]
-layout_mode = 2
+[node name="Politician" type="Sprite2D" parent="." unique_id=196798341]
+position = Vector2(2861, 904)
+texture = ExtResource("15_ihktq")
 
-[node name="HSeparator" type="HSeparator" parent="layout_container" unique_id=2025702977]
-layout_mode = 2
+[node name="PoliticianAndHand" type="Sprite2D" parent="." unique_id=1742819333]
+position = Vector2(2901, 1198)
+texture = ExtResource("15_upmhx")
 
-[node name="actions_container" type="HBoxContainer" parent="layout_container" unique_id=112850873]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-
-[node name="clear_button" type="Button" parent="layout_container/actions_container" unique_id=1751212860]
-layout_mode = 2
-text = "clear words"
-
-[node name="submit_button" type="Button" parent="layout_container/actions_container" unique_id=977557034]
-layout_mode = 2
-text = "deliver answer"
-
-[node name="hud_row" type="HBoxContainer" parent="layout_container" unique_id=410038514]
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="score_label" type="Label" parent="layout_container/hud_row" unique_id=1947701201]
-layout_mode = 2
-text = "total score: 0"
-
-[node name="answered_label" type="Label" parent="layout_container/hud_row" unique_id=995864730]
-layout_mode = 2
-text = "questions answered: 0"
+[node name="frame" type="TextureRect" parent="." unique_id=1168869136]
+z_index = 6
+layout_mode = 0
+offset_right = 6400.0
+offset_bottom = 3600.0
+mouse_filter = 2
+texture = ExtResource("20_0dnje")

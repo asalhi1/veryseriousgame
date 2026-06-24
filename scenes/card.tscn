@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://4b8f7olqp122"]
+
+[ext_resource type="Script" uid="uid://ci2ygbdpjoifx" path="res://scripts/card.gd" id="1_6u4wf"]
+[ext_resource type="Theme" uid="uid://3jqnahcsf764" path="res://theme.tres" id="1_ktuci"]
+[ext_resource type="Texture2D" uid="uid://vd8v1yiyuvcr" path="res://assets/art/card.png" id="2_ktuci"]
+
+[node name="card" type="Control" unique_id=692199455]
+custom_minimum_size = Vector2(600, 700)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 300.0
+offset_bottom = 450.0
+mouse_filter = 1
+theme = ExtResource("1_ktuci")
+script = ExtResource("1_6u4wf")
+
+[node name="visuals" type="Control" parent="." unique_id=1530784934]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(370, 400)
+mouse_filter = 2
+
+[node name="card_background" type="TextureRect" parent="visuals" unique_id=115050416]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_ktuci")
+
+[node name="word_label" type="Label" parent="visuals" unique_id=1190604872]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Lizard People"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="visuals" unique_id=2143721781]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_right = 50
+
+[node name="category_label" type="HBoxContainer" parent="visuals/MarginContainer" unique_id=90404340]
+layout_mode = 2
