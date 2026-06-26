@@ -18,6 +18,9 @@ enum CharaExpression { NEUTRAL, EYES_CLOSED, NERVOUS, STRESSED, LAUGH, SURPRISED
 @export var spinner_label_font_size: int = 128
 @export var spinner_label_outline_size: int = 14
 @export var single_spin_trust_penalty: float = 4.0
+@export var meter_tween_duration: float = 0.35
+@export var timer_tween_duration: float = 0.15
+@export var timer_tween_update_interval: float = 0.08
 
 var current_expression: CharaExpression = CharaExpression.NEUTRAL
 var tone_to_expression := {
@@ -30,8 +33,8 @@ var tone_to_expression := {
 }
 
 @onready var preview_lbl: Label = $active_sentence_lbl
-@onready var wheel_spinner: TextureButton = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/wheel_spinner
-@onready var wheel_bg: TextureRect = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/wheel_spinner/wheel_bg
+@onready var wheel_spinner: TextureButton = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer/wheel_spinner
+@onready var wheel_bg: TextureRect = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer/wheel_spinner/wheel_bg
 @onready var reporter_bubble: Control = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/reporter_bubble
 @onready var question_lbl: Label = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/reporter_bubble/margin/question_lbl
 @onready var time_bar: TextureProgressBar = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/game_clock
@@ -39,7 +42,7 @@ var tone_to_expression := {
 @onready var trust_bar: Range = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area/trust_bar
 @onready var vibe_bar: Range = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area/vibe_bar
 @onready var emergency_flush_btn: TextureButton = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/emergency_flush_btn
-@onready var round_counter_panel: PanelContainer = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/round_counter_panel
+#@onready var round_counter_panel: PanelContainer = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/round_counter_panel
 @onready var clear_speech_btn: TextureButton = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/clear_speech_btn
 @onready var deliver_speech_btn: TextureButton = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/deliver_speech_btn
 @onready var blackout_overlay: ColorRect = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/black_rect
@@ -47,6 +50,14 @@ var tone_to_expression := {
 @onready var crowd: TextureRect = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/crowd
 
 @onready var politician_node: Sprite2D = $Politician
+
+@onready var ending_screen: PanelContainer = $ending_screen
+@onready var ending_title_lbl: Label = $ending_screen/HBoxContainer/VBoxContainer/ending_title_lbl
+@onready var ending_desc_lbl: Label = $ending_screen/HBoxContainer/VBoxContainer/ending_desc_lbl
+@onready var restart_btn: TextureButton = $ending_screen/HBoxContainer/VBoxContainer/menu_button
+
+@onready var transcript_container: VBoxContainer = $ending_screen/HBoxContainer/ScrollContainer/transcript_container
+var history: Array[Dictionary] = []
 
 @onready var hand_cards = [
   $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/hand_mat_center/hand_cards_center/card0,
@@ -67,6 +78,10 @@ var expression_textures: Array[Texture2D] = [
 var crowd_base_y: float = 0.0
 var crowd_bob_tween: Tween
 var blackout_tween: Tween
+var trust_bar_tween: Tween
+var vibe_bar_tween: Tween
+var time_bar_tween: Tween
+var timer_tween_accumulator: float = 0.0
 var is_spinner_animating: bool = false
 var spinner_word_labels: Array[Label] = []
 var spinner_words: Array[WordData] = []
@@ -87,6 +102,8 @@ func _ready() -> void:
   if emergency_flush_btn:
     emergency_flush_btn.pressed.connect(_on_emergency_flush_pressed)
 
+  restart_btn.pressed.connect(_on_restart_pressed)
+
   if crowd:
     crowd_base_y = crowd.position.y
 
@@ -95,13 +112,89 @@ func _ready() -> void:
 
   time_bar.max_value = GameManager.time_left
   time_bar.value = time_bar.max_value
+  trust_bar.value = GameManager.trust_vs_confusion
+  vibe_bar.value = GameManager.hype_vs_meme
+
+  ending_screen.visible = false
 
   GameManager._start_new_round()
   _update_ui_display()
 
 func _process(_delta: float) -> void:
   timer_lbl.text = str(int(ceil(max(GameManager.time_left, 0.0)))) + "s"
-  time_bar.value = GameManager.time_left
+  timer_tween_accumulator += _delta
+  if timer_tween_accumulator >= timer_tween_update_interval:
+    timer_tween_accumulator = 0.0
+    _tween_time_bar(GameManager.time_left)
+  _check_for_game_end()
+
+func _check_for_game_end() -> void:
+  if ending_screen.visible:
+    return
+  
+  if GameManager.trust_vs_confusion <= 0.0:
+    _trigger_ending(
+      "THE IMPEACHMENT ENDING",
+      "You've been impeached! The public has lost all trust in you, and your political career is over."
+    )
+    return
+  
+  if GameManager.hype_vs_meme <= 0.0:
+    _trigger_ending(
+      "THE CANCEL CULTURE ENDING",
+      "You've been canceled! The public has turned against you, and your political career is over."
+    )
+    return
+  
+  if GameManager.time_left <= 0.0:
+    # high hype high trust
+    if GameManager.trust_vs_confusion >= 75.0 and GameManager.hype_vs_meme >= 75.0:
+      _trigger_ending(
+        "THE AWESOME ENDING",
+        "Congratulations! You've managed to maintain high trust and hype throughout your campaign, securing a successful political career."
+      )
+    # high hype low trust
+    elif GameManager.trust_vs_confusion < 30.0 and GameManager.hype_vs_meme >= 75.0:
+      _trigger_ending(
+        "THE CHAOS ENDING",
+        "You've managed to create a lot of hype, but your trustworthiness has plummeted. Your campaign is in chaos, and your political future is uncertain."
+      )
+    # avg
+    else:
+      _trigger_ending(
+        "THE AVERAGE ENDING",
+        "Your campaign has been mediocre, with neither significant hype nor trust. Your political future remains uncertain."
+      )
+
+func _trigger_ending(title: String, description: String) -> void:
+  set_process(false)
+
+  ending_title_lbl.text = title
+  ending_desc_lbl.text = description
+
+  for child in transcript_container.get_children():
+    if is_instance_valid(child) and not child.is_in_group("keep"):
+      child.queue_free()
+  
+  if history.is_empty():
+    var empty_lbl = Label.new()
+    empty_lbl.text = "You didn't even answer a single question. Impressive."
+    empty_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+    empty_lbl.custom_minimum_size = Vector2(1000, 0)
+    transcript_container.add_child(empty_lbl)
+  else:
+    for round_entry in history:
+      var round_lbl = Label.new()
+      round_lbl.text = "Q: " + round_entry["question"] + "\nA: " + round_entry["answer"]
+      round_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+      round_lbl.custom_minimum_size = Vector2(1000, 0)
+      transcript_container.add_child(round_lbl)
+
+  ending_screen.visible = true
+
+func _on_restart_pressed() -> void:
+  GameManager.reset_match_state()
+  get_tree().reload_current_scene()
 
 func _update_ui_display() -> void:
   var words = []
@@ -155,8 +248,44 @@ func _update_ui_display() -> void:
   wheel_spinner.disabled = lock_inputs
   emergency_flush_btn.disabled = lock_inputs
 
-  trust_bar.value = GameManager.trust_vs_confusion
-  vibe_bar.value = GameManager.hype_vs_meme
+  _tween_trust_bar(GameManager.trust_vs_confusion)
+  _tween_vibe_bar(GameManager.hype_vs_meme)
+
+func _tween_trust_bar(target_value: float) -> void:
+  var clamped_target = clamp(target_value, trust_bar.min_value, trust_bar.max_value)
+  if abs(trust_bar.value - clamped_target) < 0.01:
+    trust_bar.value = clamped_target
+    return
+
+  if is_instance_valid(trust_bar_tween):
+    trust_bar_tween.kill()
+
+  trust_bar_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+  trust_bar_tween.tween_property(trust_bar, "value", clamped_target, meter_tween_duration)
+
+func _tween_vibe_bar(target_value: float) -> void:
+  var clamped_target = clamp(target_value, vibe_bar.min_value, vibe_bar.max_value)
+  if abs(vibe_bar.value - clamped_target) < 0.01:
+    vibe_bar.value = clamped_target
+    return
+
+  if is_instance_valid(vibe_bar_tween):
+    vibe_bar_tween.kill()
+
+  vibe_bar_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+  vibe_bar_tween.tween_property(vibe_bar, "value", clamped_target, meter_tween_duration)
+
+func _tween_time_bar(target_value: float) -> void:
+  var clamped_target = clamp(target_value, time_bar.min_value, time_bar.max_value)
+  if abs(time_bar.value - clamped_target) < 0.01:
+    time_bar.value = clamped_target
+    return
+
+  if is_instance_valid(time_bar_tween):
+    time_bar_tween.kill()
+
+  time_bar_tween = create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
+  time_bar_tween.tween_property(time_bar, "value", clamped_target, timer_tween_duration)
 
 func _on_card_selected(index: int) -> void:
   GameManager._pick_word_from_hand(index)
@@ -219,6 +348,13 @@ func _spin_into_card_index(target_index: int) -> void:
   is_spinner_animating = false
   _update_ui_display()
 
+func log_current_round(question_text: String, answer_text: String) -> void:
+  var round_entry: Dictionary = {
+    "question": question_text,
+    "answer": answer_text
+  }
+  history.append(round_entry)  
+
 func _on_clear_pressed() -> void:
   GameManager.selected_speech_line.clear()
   _update_ui_display()
@@ -227,8 +363,14 @@ func _on_deliver_or_continue_pressed() -> void:
   if GameManager.awaiting_round_continue:
     GameManager.continue_to_next_question()
   else:
+    var submitted_speech := GameManager.build_sentence(GameManager.selected_speech_line)
     GameManager._evaluate_selected_line()
-    _play_crowd_bob()
+    if GameManager.awaiting_round_continue:
+      var completed_speech := GameManager.last_round_speech_text
+      if completed_speech.strip_edges() == "":
+        completed_speech = submitted_speech
+      log_current_round(GameManager.current_question.text, completed_speech.strip_edges())
+      _play_crowd_bob()
   _update_ui_display()
 
 func _on_emergency_flush_pressed() -> void:

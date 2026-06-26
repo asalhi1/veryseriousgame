@@ -11,15 +11,29 @@
 [ext_resource type="Texture2D" uid="uid://cuqbslnbprah2" path="res://assets/art/time bar background.png" id="6_x8pta"]
 [ext_resource type="Texture2D" uid="uid://dt87dlj1dege3" path="res://assets/art/green bar.png" id="7_ihktq"]
 [ext_resource type="Texture2D" uid="uid://djuc3du5cfslo" path="res://assets/art/red bar.png" id="8_igvt4"]
-[ext_resource type="Texture2D" uid="uid://bhoqgb7fq73ju" path="res://assets/art/bar background.png" id="8_x8pta"]
 [ext_resource type="Texture2D" uid="uid://cw0rxf77y2wrh" path="res://assets/art/table and stuff.png" id="9_x8pta"]
-[ext_resource type="Texture2D" uid="uid://ddowqsovc4ghe" path="res://assets/art/normal button.png" id="11_upmhx"]
+[ext_resource type="Texture2D" uid="uid://dlut0xmhwxgng" path="res://assets/art/greenbarback.png" id="10_0dnje"]
 [ext_resource type="PackedScene" uid="uid://4b8f7olqp122" path="res://scenes/card.tscn" id="12_ihktq"]
-[ext_resource type="Texture2D" uid="uid://csuj5kr8wlqfp" path="res://assets/art/red button.png" id="13_ihktq"]
-[ext_resource type="Texture2D" uid="uid://dma25smu1in2b" path="res://assets/art/green button.png" id="14_igvt4"]
+[ext_resource type="Texture2D" uid="uid://crjo8b3ntxt4b" path="res://assets/art/redbarback.png" id="12_lab56"]
+[ext_resource type="Texture2D" uid="uid://d23kcik5t2k3v" path="res://assets/art/button.png" id="14_2rmtt"]
+[ext_resource type="Texture2D" uid="uid://bjedg55k0r2pl" path="res://assets/art/buttonpressed.png" id="15_0dnje"]
 [ext_resource type="Texture2D" uid="uid://dleev70ae0unt" path="res://assets/art/politician.png" id="15_ihktq"]
 [ext_resource type="Texture2D" uid="uid://06opjnf7vmuf" path="res://assets/art/politician and hand.png" id="15_upmhx"]
 [ext_resource type="Texture2D" uid="uid://wniini2b0vqv" path="res://assets/art/frame.png" id="20_0dnje"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2rmtt"]
+bg_color = Color(0.80784315, 0.80784315, 0.9411765, 1)
+border_width_left = 100
+border_width_top = 100
+border_width_right = 100
+border_width_bottom = 100
+border_color = Color(0.8915984, 0.7594599, 0.80599004, 1)
+border_blend = true
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_g4v7s"]
+grow_begin = 50.0
+grow_end = 50.0
+thickness = 10
 
 [node name="main_game_ui" type="Control" unique_id=1794864033]
 layout_mode = 3
@@ -56,14 +70,22 @@ layout_mode = 2
 layout_mode = 2
 texture = ExtResource("1_sjwyb")
 
-[node name="wheel_spinner" type="TextureButton" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=963198117]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=1579451233]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="phone_top_spacer" type="Control" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer" unique_id=239177470]
+custom_minimum_size = Vector2(0, 125)
+layout_mode = 2
+
+[node name="wheel_spinner" type="TextureButton" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer" unique_id=963198117]
 z_index = 1
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
+size_flags_vertical = 3
 texture_normal = ExtResource("2_5kh4o")
 
-[node name="wheel_bg" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/wheel_spinner" unique_id=1297004607]
+[node name="wheel_bg" type="TextureRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer/wheel_spinner" unique_id=1297004607]
 z_index = -1
 layout_mode = 0
 offset_left = 130.0
@@ -73,8 +95,13 @@ offset_bottom = 1865.0
 pivot_offset_ratio = Vector2(0.5, 0.5)
 size_flags_horizontal = 4
 size_flags_vertical = 4
+mouse_filter = 2
 texture = ExtResource("2_1kaiv")
 stretch_mode = 2
+
+[node name="phone_bottom_spacer" type="Control" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer" unique_id=40409835]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
 
 [node name="black_rect" type="ColorRect" parent="MarginContainer/main_vertical_stack/top_half_view/spin_panel" unique_id=828630592]
 z_index = 2
@@ -184,12 +211,20 @@ text = "Confusion"
 horizontal_alignment = 2
 vertical_alignment = 1
 
+[node name="left_spacer" type="Control" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1067918699]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
 [node name="trust_bar" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1262027675]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 6
-texture_under = ExtResource("8_x8pta")
+texture_under = ExtResource("10_0dnje")
 texture_progress = ExtResource("7_ihktq")
+
+[node name="right_spacer" type="Control" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1800140125]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 
 [node name="Label2" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area" unique_id=1588345529]
 layout_mode = 2
@@ -207,12 +242,20 @@ size_flags_horizontal = 3
 text = "Meme"
 horizontal_alignment = 2
 
+[node name="left_spacer" type="Control" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=352160978]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
 [node name="vibe_bar" type="TextureProgressBar" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=71513224]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 6
-texture_under = ExtResource("8_x8pta")
+texture_under = ExtResource("12_lab56")
 texture_progress = ExtResource("8_igvt4")
+
+[node name="right_spacer" type="Control" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=1622628586]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 
 [node name="Label2" type="Label" parent="MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area" unique_id=1147232735]
 layout_mode = 2
@@ -233,13 +276,32 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
 
+[node name="left_spacer" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=320866936]
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+
 [node name="left_utility_dock" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=749264858]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=930655266]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_vertical = 6
+text = "[Right click on a card to replace it, press the button below to replace entire hand]"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="mid_spacer" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=1433887052]
+custom_minimum_size = Vector2(0, 75)
 layout_mode = 2
 
 [node name="emergency_flush_btn" type="TextureButton" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=51952867]
+modulate = Color(1.0924681, 0.905926, 1.0924681, 1)
 layout_mode = 2
 size_flags_vertical = 6
-texture_normal = ExtResource("11_upmhx")
+texture_normal = ExtResource("14_2rmtt")
+texture_pressed = ExtResource("15_0dnje")
 
 [node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/emergency_flush_btn" unique_id=1574701082]
 layout_mode = 1
@@ -254,10 +316,7 @@ offset_right = 20.0
 offset_bottom = 33.5
 grow_horizontal = 2
 grow_vertical = 2
-text = "Spin Again"
-
-[node name="round_counter_panel" type="PanelContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=969160955]
-layout_mode = 2
+text = "New Hand"
 
 [node name="hand_mat_center" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=52444428]
 layout_mode = 2
@@ -295,10 +354,13 @@ layout_mode = 2
 [node name="right_actions_dock" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=1483229090]
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_constants/separation = 20
 
 [node name="clear_speech_btn" type="TextureButton" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock" unique_id=1359612176]
+modulate = Color(1.353256, 0.7826775, 0.71986145, 1)
 layout_mode = 2
-texture_normal = ExtResource("13_ihktq")
+texture_normal = ExtResource("14_2rmtt")
+texture_pressed = ExtResource("15_0dnje")
 
 [node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/clear_speech_btn" unique_id=1626612213]
 layout_mode = 1
@@ -316,8 +378,10 @@ grow_vertical = 2
 text = "Clear Speech"
 
 [node name="deliver_speech_btn" type="TextureButton" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock" unique_id=1521336466]
+modulate = Color(0.9397174, 1.2066854, 0.5523522, 1)
 layout_mode = 2
-texture_normal = ExtResource("14_igvt4")
+texture_normal = ExtResource("14_2rmtt")
+texture_pressed = ExtResource("15_0dnje")
 
 [node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/deliver_speech_btn" unique_id=833745125]
 layout_mode = 1
@@ -334,24 +398,29 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Deliver Speech"
 
+[node name="right_spacer" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=1725012729]
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+
 [node name="active_sentence_lbl" type="Label" parent="." unique_id=1172833583]
 layout_mode = 0
 offset_left = 50.0
-offset_top = 2260.0
+offset_top = 2244.0
 offset_right = 6350.0
-offset_bottom = 2362.0
+offset_bottom = 2396.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 192
 text = "Hello World"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Politician" type="Sprite2D" parent="." unique_id=196798341]
-position = Vector2(2925, 959)
+position = Vector2(2925, 979)
 texture = ExtResource("15_ihktq")
 
 [node name="PoliticianAndHand" type="Sprite2D" parent="." unique_id=1742819333]
-position = Vector2(2995, 1284)
+position = Vector2(2995, 1304)
 texture = ExtResource("15_upmhx")
 
 [node name="frame" type="TextureRect" parent="." unique_id=1168869136]
@@ -361,3 +430,92 @@ offset_right = 6400.0
 offset_bottom = 3600.0
 mouse_filter = 2
 texture = ExtResource("20_0dnje")
+
+[node name="ending_screen" type="PanelContainer" parent="." unique_id=299693450]
+visible = false
+z_index = 10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_2rmtt")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ending_screen" unique_id=629777700]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 300
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ending_screen/HBoxContainer" unique_id=1844755973]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 50
+
+[node name="ending_title_lbl" type="Label" parent="ending_screen/HBoxContainer/VBoxContainer" unique_id=996924778]
+custom_minimum_size = Vector2(3000, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_font_sizes/font_size = 512
+text = "Sample ending title"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="ending_screen/HBoxContainer/VBoxContainer" unique_id=295660876]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_g4v7s")
+
+[node name="ending_desc_lbl" type="Label" parent="ending_screen/HBoxContainer/VBoxContainer" unique_id=1392226474]
+custom_minimum_size = Vector2(2000, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+text = "lorem ipsum dolor sit amet"
+autowrap_mode = 2
+
+[node name="button_spacer" type="Control" parent="ending_screen/HBoxContainer/VBoxContainer" unique_id=1251364787]
+custom_minimum_size = Vector2(0, 450)
+layout_mode = 2
+
+[node name="menu_button" type="TextureButton" parent="ending_screen/HBoxContainer/VBoxContainer" unique_id=1907083081]
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("14_2rmtt")
+texture_pressed = ExtResource("15_0dnje")
+
+[node name="menu_button_lbl" type="Label" parent="ending_screen/HBoxContainer/VBoxContainer/menu_button" unique_id=1781609275]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -356.0
+offset_top = -51.0
+offset_right = 356.0
+offset_bottom = 51.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "New Campaign"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ending_screen/HBoxContainer" unique_id=1761205785]
+custom_minimum_size = Vector2(2000, 2000)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="transcript_container" type="VBoxContainer" parent="ending_screen/HBoxContainer/ScrollContainer" unique_id=2098510095]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="transcript_title" type="Label" parent="ending_screen/HBoxContainer/ScrollContainer/transcript_container" unique_id=1585137557 groups=["keep"]]
+layout_mode = 2
+theme_override_font_sizes/font_size = 256
+text = "Press Conference Report"
+
+[node name="HSeparator" type="HSeparator" parent="ending_screen/HBoxContainer/ScrollContainer/transcript_container" unique_id=1581935048 groups=["keep"]]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_g4v7s")

@@ -31,6 +31,25 @@ var game_over : bool = false
 @export var match_length: float = 120.0 #seconds
 var time_left : float = match_length
 
+func reset_match_state() -> void:
+  current_hand.clear()
+  selected_speech_line.clear()
+  current_question = null
+
+  trust_vs_confusion = 50.0
+  hype_vs_meme = 50.0
+  total_score = 0.0
+  answered_questions = 0
+  awaiting_round_continue = false
+
+  last_round_score = 0.0
+  last_round_combo_names.clear()
+  last_round_tone_matches = 0
+  last_round_speech_text = ""
+
+  game_over = false
+  time_left = match_length
+
 func _ready() -> void:
   randomize()
   load_words_from_json("res://data/words.json")
@@ -44,8 +63,6 @@ func _process(_delta: float) -> void:
 
   if not awaiting_round_continue:
     time_left -= _delta
-    if time_left <= 0.0:
-      ending("time's up", "the press conference is over")
 
   if Input.is_action_just_pressed("ui_accept"):
     if awaiting_round_continue:
@@ -197,11 +214,6 @@ func _evaluate_selected_line() -> void:
   print("press enter or continue to see the next question")
 
   selected_speech_line.clear()
-
-func ending(reason_title: String, reason_message: String) -> void:
-  game_over = true
-  print("game over: ", reason_title, " - ", reason_message)
-  emit_signal("game_ended", reason_title, reason_message)
 
 func continue_to_next_question() -> void:
   if not awaiting_round_continue:
