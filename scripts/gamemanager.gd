@@ -26,6 +26,7 @@ var last_round_score: float = 0.0
 var last_round_combo_names: Array[String] = []
 var last_round_tone_matches: int = 0
 var last_round_speech_text: String = ""
+var last_round_feedback: Dictionary = {}
 
 var game_over : bool = false
 @export var match_length: float = 120.0 #seconds
@@ -46,6 +47,7 @@ func reset_match_state() -> void:
   last_round_combo_names.clear()
   last_round_tone_matches = 0
   last_round_speech_text = ""
+  last_round_feedback.clear()
 
   game_over = false
   time_left = match_length
@@ -207,6 +209,7 @@ func _evaluate_selected_line() -> void:
   last_round_combo_names = result["combo_names"]
   last_round_tone_matches = result["tone_matches"]
   last_round_speech_text = result["speech_text"]
+  last_round_feedback = result
   awaiting_round_continue = true
 
   print("round score: ", round_score)
@@ -445,8 +448,10 @@ func evaluate_speech(line: Array[WordData]) -> Dictionary:
     return {
       "score": 0.0,
       "combo_names": [],
+      "combo_entries": [],
       "tone_matches": 0,
-      "speech_text": ""
+      "speech_text": "",
+      "word_scores": []
     }
 
   var speech_text = build_sentence(line)
@@ -454,6 +459,7 @@ func evaluate_speech(line: Array[WordData]) -> Dictionary:
 
   var trust_delta = 0.0
   var hype_delta = 0.0
+  var word_scores: Array[Dictionary] = []
 
   var categories: Array[int] = []
   for word in line:
@@ -464,8 +470,17 @@ func evaluate_speech(line: Array[WordData]) -> Dictionary:
   for i in range(categories.size()):
     var base_effect = _get_base_word_effect(categories[i])
     var position_weight = _get_position_weight(i)
-    trust_delta += base_effect["trust"] * position_weight
-    hype_delta += base_effect["hype"] * position_weight
+    var word_trust = base_effect["trust"] * position_weight
+    var word_hype = base_effect["hype"] * position_weight
+    trust_delta += word_trust
+    hype_delta += word_hype
+    word_scores.append({
+      "index": i,
+      "word": line[i].text,
+      "trust": word_trust,
+      "hype": word_hype,
+      "impact": word_trust + word_hype
+    })
 
   for i in range(categories.size() - 1):
     var transition_effect = _get_transition_effect(categories[i], categories[i + 1])
@@ -557,8 +572,10 @@ func evaluate_speech(line: Array[WordData]) -> Dictionary:
   return {
     "score": round_score,
     "combo_names": combo_result["names"],
+    "combo_entries": combo_result["entries"],
     "tone_matches": tone_match_count,
-    "speech_text": speech_text
+    "speech_text": speech_text,
+    "word_scores": word_scores
   }
 
 func _get_base_word_effect(category_value: int) -> Dictionary:
@@ -629,6 +646,7 @@ func _resolve_combos(categories: Array[int]) -> Dictionary:
   var total_trust = 0.0
   var total_hype = 0.0
   var unlocked_names: Array[String] = []
+  var unlocked_entries: Array[Dictionary] = []
 
   for combo in combo_definitions:
     var pattern: Array = combo["pattern"]
@@ -636,8 +654,19 @@ func _resolve_combos(categories: Array[int]) -> Dictionary:
       total_trust += combo["trust"]
       total_hype += combo["hype"]
       unlocked_names.append(combo["name"])
+      unlocked_entries.append({
+        "name": combo["name"],
+        "trust": combo["trust"],
+        "hype": combo["hype"],
+        "impact": combo["trust"] + combo["hype"]
+      })
 
-  return {"trust": total_trust, "hype": total_hype, "names": unlocked_names}
+  return {
+    "trust": total_trust,
+    "hype": total_hype,
+    "names": unlocked_names,
+    "entries": unlocked_entries
+  }
 
 func _line_contains_pattern(categories: Array[int], pattern: Array) -> bool:
   if pattern.size() > categories.size():

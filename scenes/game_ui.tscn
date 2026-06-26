@@ -282,7 +282,7 @@ layout_mode = 2
 
 [node name="left_utility_dock" type="VBoxContainer" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=749264858]
 layout_mode = 2
-size_flags_vertical = 4
+size_flags_vertical = 8
 
 [node name="Label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=930655266]
 custom_minimum_size = Vector2(500, 0)
@@ -317,6 +317,22 @@ offset_bottom = 33.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "New Hand"
+
+[node name="mid_spacer2" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=316885625]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+
+[node name="score_label" type="Label" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=2040822378]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_vertical = 6
+text = "Score: 74"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="mid_spacer3" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock" unique_id=251016375]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
 
 [node name="hand_mat_center" type="Control" parent="MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk" unique_id=52444428]
 layout_mode = 2

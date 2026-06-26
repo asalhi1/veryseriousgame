@@ -21,6 +21,21 @@ enum CharaExpression { NEUTRAL, EYES_CLOSED, NERVOUS, STRESSED, LAUGH, SURPRISED
 @export var meter_tween_duration: float = 0.35
 @export var timer_tween_duration: float = 0.15
 @export var timer_tween_update_interval: float = 0.08
+@export var feedback_float_distance: float = 150.0
+@export var feedback_popup_float_duration: float = 1.2
+@export var feedback_popup_fade_in_duration: float = 0.18
+@export var feedback_popup_scale_in_duration: float = 0.3
+@export var feedback_popup_linger_duration: float = 0.45
+@export var feedback_popup_fade_out_duration: float = 0.5
+@export var total_score_pulse_up_duration: float = 0.26
+@export var total_score_pulse_down_duration: float = 0.32
+@export var feedback_ui_scale: float = 3.0
+@export var crowd_reaction_scale_range: Vector2 = Vector2(0.85, 1.25)
+@export var crowd_reaction_rise_distance: float = 36.0
+@export var crowd_reaction_fade_in_duration: float = 0.16
+@export var crowd_reaction_linger_duration: float = 0.9
+@export var crowd_reaction_fade_out_duration: float = 0.55
+@export var crowd_reaction_spawn_delay_step: float = 0.08
 
 var current_expression: CharaExpression = CharaExpression.NEUTRAL
 var tone_to_expression := {
@@ -35,6 +50,7 @@ var tone_to_expression := {
 @onready var preview_lbl: Label = $active_sentence_lbl
 @onready var wheel_spinner: TextureButton = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer/wheel_spinner
 @onready var wheel_bg: TextureRect = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/VBoxContainer/wheel_spinner/wheel_bg
+@onready var crowd_display: TextureRect = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display
 @onready var reporter_bubble: Control = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/reporter_bubble
 @onready var question_lbl: Label = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/reporter_bubble/margin/question_lbl
 @onready var time_bar: TextureProgressBar = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/game_clock
@@ -42,9 +58,11 @@ var tone_to_expression := {
 @onready var trust_bar: Range = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/trust_area/trust_bar
 @onready var vibe_bar: Range = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/metrics_bar/metrics_layout/vibe_area/vibe_bar
 @onready var emergency_flush_btn: TextureButton = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/emergency_flush_btn
-#@onready var round_counter_panel: PanelContainer = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/round_counter_panel
+@onready var left_utility_dock: VBoxContainer = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock
 @onready var clear_speech_btn: TextureButton = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/clear_speech_btn
+@onready var clear_speech_btn_lbl: Label = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/clear_speech_btn/Label
 @onready var deliver_speech_btn: TextureButton = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/deliver_speech_btn
+@onready var deliver_speech_btn_lbl: Label = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/right_actions_dock/deliver_speech_btn/Label
 @onready var blackout_overlay: ColorRect = $MarginContainer/main_vertical_stack/top_half_view/spin_panel/black_rect
 
 @onready var crowd: TextureRect = $MarginContainer/main_vertical_stack/top_half_view/feed_panel/crowd_display/crowd
@@ -75,16 +93,38 @@ var expression_textures: Array[Texture2D] = [
   preload("res://assets/art/politician hehe.png"),
   preload("res://assets/art/politician surpr.png")
 ]
+var reaction_positive_textures: Array[Texture2D] = [
+  preload("res://assets/art/yass.png"),
+  preload("res://assets/art/yaay.png"),
+  preload("res://assets/art/heh.png"),
+  preload("res://assets/art/67.png")
+]
+var reaction_negative_textures: Array[Texture2D] = [
+  preload("res://assets/art/angry.png"),
+  preload("res://assets/art/clown.png"),
+  preload("res://assets/art/deadass.png"),
+  preload("res://assets/art/eeeh.png"),
+  preload("res://assets/art/moni.png")
+]
+var reaction_neutral_textures: Array[Texture2D] = [
+  preload("res://assets/art/67.png"),
+  preload("res://assets/art/heh.png"),
+  preload("res://assets/art/eeeh.png")
+]
 var crowd_base_y: float = 0.0
 var crowd_bob_tween: Tween
 var blackout_tween: Tween
 var trust_bar_tween: Tween
 var vibe_bar_tween: Tween
 var time_bar_tween: Tween
+var total_score_pulse_tween: Tween
 var timer_tween_accumulator: float = 0.0
 var is_spinner_animating: bool = false
 var spinner_word_labels: Array[Label] = []
 var spinner_words: Array[WordData] = []
+var feedback_layer: Control
+@onready var total_score_lbl: Label = $MarginContainer/main_vertical_stack/hand_mat/bottom_half_desk/left_utility_dock/score_label
+var displayed_total_score: int = -999999
 
 func _ready() -> void:
   for i in range(hand_cards.size()):
@@ -114,6 +154,9 @@ func _ready() -> void:
   time_bar.value = time_bar.max_value
   trust_bar.value = GameManager.trust_vs_confusion
   vibe_bar.value = GameManager.hype_vs_meme
+  _setup_feedback_layer()
+  _setup_total_score_label()
+  _update_total_score_label(false)
 
   ending_screen.visible = false
 
@@ -170,7 +213,7 @@ func _trigger_ending(title: String, description: String) -> void:
   set_process(false)
 
   ending_title_lbl.text = title
-  ending_desc_lbl.text = description
+  ending_desc_lbl.text = description + "\n\nFINAL SCORE: " + str(int(round(GameManager.total_score)))
 
   for child in transcript_container.get_children():
     if is_instance_valid(child) and not child.is_in_group("keep"):
@@ -248,8 +291,16 @@ func _update_ui_display() -> void:
   wheel_spinner.disabled = lock_inputs
   emergency_flush_btn.disabled = lock_inputs
 
+  if GameManager.awaiting_round_continue:
+    deliver_speech_btn_lbl.text = "Next Question"
+    clear_speech_btn_lbl.text = ""
+  else:
+    deliver_speech_btn_lbl.text = "Deliver Speech"
+    clear_speech_btn_lbl.text = "Clear Speech"
+
   _tween_trust_bar(GameManager.trust_vs_confusion)
   _tween_vibe_bar(GameManager.hype_vs_meme)
+  _update_total_score_label(false)
 
 func _tween_trust_bar(target_value: float) -> void:
   var clamped_target = clamp(target_value, trust_bar.min_value, trust_bar.max_value)
@@ -363,6 +414,7 @@ func _on_deliver_or_continue_pressed() -> void:
   if GameManager.awaiting_round_continue:
     GameManager.continue_to_next_question()
   else:
+    var submitted_words: Array[WordData] = GameManager.selected_speech_line.duplicate()
     var submitted_speech := GameManager.build_sentence(GameManager.selected_speech_line)
     GameManager._evaluate_selected_line()
     if GameManager.awaiting_round_continue:
@@ -370,8 +422,169 @@ func _on_deliver_or_continue_pressed() -> void:
       if completed_speech.strip_edges() == "":
         completed_speech = submitted_speech
       log_current_round(GameManager.current_question.text, completed_speech.strip_edges())
+      _show_round_feedback_popups(submitted_words, GameManager.last_round_feedback)
+      _spawn_crowd_reactions(GameManager.last_round_feedback)
       _play_crowd_bob()
   _update_ui_display()
+
+func _setup_feedback_layer() -> void:
+  feedback_layer = Control.new()
+  feedback_layer.name = "feedback_layer"
+  feedback_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+  feedback_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+  feedback_layer.grow_horizontal = Control.GROW_DIRECTION_BOTH
+  feedback_layer.grow_vertical = Control.GROW_DIRECTION_BOTH
+  feedback_layer.z_index = 9
+  add_child(feedback_layer)
+
+func _setup_total_score_label() -> void:
+  total_score_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+  total_score_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+  total_score_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+  #total_score_lbl.custom_minimum_size = Vector2(520.0, 220.0) * feedback_ui_scale
+  total_score_lbl.add_theme_font_size_override("font_size", int(round(58.0 * feedback_ui_scale)))
+  total_score_lbl.add_theme_color_override("font_color", Color(1.0, 0.95, 0.35, 1.0))
+  total_score_lbl.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 1.0))
+  total_score_lbl.add_theme_constant_override("outline_size", int(round(8.0 * feedback_ui_scale)))
+
+func _update_total_score_label(play_pulse: bool) -> void:
+  if not total_score_lbl:
+    return
+
+  var rounded_total := int(round(GameManager.total_score))
+  total_score_lbl.text = "TOTAL SCORE: " + str(rounded_total)
+
+  if play_pulse and rounded_total != displayed_total_score:
+    if is_instance_valid(total_score_pulse_tween):
+      total_score_pulse_tween.kill()
+
+    total_score_lbl.scale = Vector2.ONE
+    total_score_pulse_tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    total_score_pulse_tween.tween_property(total_score_lbl, "scale", Vector2(1.13, 1.13), total_score_pulse_up_duration)
+    total_score_pulse_tween.tween_property(total_score_lbl, "scale", Vector2.ONE, total_score_pulse_down_duration)
+
+  displayed_total_score = rounded_total
+
+func _show_round_feedback_popups(submitted_words: Array[WordData], feedback: Dictionary) -> void:
+  if not is_instance_valid(feedback_layer):
+    return
+
+  var word_scores: Array = feedback.get("word_scores", [])
+  var word_count = min(word_scores.size(), submitted_words.size())
+  for i in range(word_count):
+    var word_entry: Dictionary = word_scores[i]
+    var word_ref: WordData = submitted_words[i]
+    var hand_index := GameManager.current_hand.find(word_ref)
+    var popup_origin := preview_lbl.get_global_rect().get_center() + Vector2(0.0, -80.0 * feedback_ui_scale)
+    if hand_index >= 0 and hand_index < hand_cards.size():
+      popup_origin = hand_cards[hand_index].get_global_rect().get_center() + Vector2(0.0, -180.0 * feedback_ui_scale)
+
+    var word_impact := float(word_entry.get("impact", 0.0))
+    _spawn_floating_feedback(_format_signed_number(word_impact), popup_origin, word_impact >= 0.0, float(i) * 0.06, int(round(82.0 * feedback_ui_scale)))
+
+  var combo_entries: Array = feedback.get("combo_entries", [])
+  for i in range(combo_entries.size()):
+    var combo_entry: Dictionary = combo_entries[i]
+    var combo_impact := float(combo_entry.get("impact", 0.0))
+    var combo_name := String(combo_entry.get("name", "combo"))
+    var combo_text := "COMBO: " + combo_name.to_upper() + " " + _format_signed_number(combo_impact)
+    var combo_origin := question_lbl.get_global_rect().get_center() + Vector2(0.0, (-180.0 * feedback_ui_scale) - ((72.0 * feedback_ui_scale) * i))
+    _spawn_floating_feedback(combo_text, combo_origin, combo_impact >= 0.0, 0.2 + (float(i) * 0.08), int(round(70.0 * feedback_ui_scale)))
+
+  var round_score := float(feedback.get("score", GameManager.last_round_score))
+  var round_text := "ROUND " + _format_signed_number(round_score)
+  _spawn_floating_feedback(round_text, preview_lbl.get_global_rect().get_center() + Vector2(0.0, -120.0 * feedback_ui_scale), round_score >= 0.0, 0.08, int(round(110.0 * feedback_ui_scale)))
+  _update_total_score_label(true)
+
+func _format_signed_number(value: float) -> String:
+  var rounded := int(round(value))
+  if rounded > 0:
+    return "+" + str(rounded)
+  return str(rounded)
+
+func _spawn_floating_feedback(text: String, global_origin: Vector2, is_positive: bool, delay: float, font_size: int) -> void:
+  var popup := Label.new()
+  popup.text = text
+  popup.mouse_filter = Control.MOUSE_FILTER_IGNORE
+  popup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+  popup.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+  popup.add_theme_font_size_override("font_size", font_size)
+  popup.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 1.0))
+  popup.add_theme_constant_override("outline_size", int(round(8.0 * feedback_ui_scale)))
+  popup.add_theme_color_override("font_color", Color(0.45, 1.0, 0.5, 1.0) if is_positive else Color(1.0, 0.45, 0.45, 1.0))
+
+  feedback_layer.add_child(popup)
+  popup.global_position = global_origin
+  popup.pivot_offset = popup.size * 0.5
+  popup.scale = Vector2(0.65, 0.65)
+  popup.modulate.a = 0.0
+
+  var target_position := popup.position + Vector2(0.0, -feedback_float_distance)
+  var popup_tween := create_tween().set_parallel(true)
+  popup_tween.tween_property(popup, "modulate:a", 1.0, feedback_popup_fade_in_duration).set_delay(delay)
+  popup_tween.tween_property(popup, "scale", Vector2(1.0, 1.0), feedback_popup_scale_in_duration).set_delay(delay)
+  popup_tween.tween_property(popup, "position", target_position, feedback_popup_float_duration).set_delay(delay)
+  popup_tween.tween_property(popup, "modulate:a", 0.0, feedback_popup_fade_out_duration).set_delay(delay + feedback_popup_float_duration + feedback_popup_linger_duration)
+  popup_tween.chain().tween_callback(popup.queue_free)
+
+func _spawn_crowd_reactions(feedback: Dictionary) -> void:
+  if not is_instance_valid(feedback_layer) or not is_instance_valid(crowd):
+    return
+
+  var combo_entries: Array = feedback.get("combo_entries", [])
+  var combo_impact := 0.0
+  for combo_entry in combo_entries:
+    combo_impact += float(combo_entry.get("impact", 0.0))
+
+  var round_score := float(feedback.get("score", GameManager.last_round_score))
+  var sentiment := round_score + (combo_impact * 0.8)
+  var texture_pool := reaction_neutral_textures
+  if sentiment >= 45.0:
+    texture_pool = reaction_positive_textures
+  elif sentiment <= -5.0:
+    texture_pool = reaction_negative_textures
+
+  if texture_pool.is_empty():
+    return
+
+  var spawn_count := 1
+  if abs(sentiment) >= 60.0 or combo_entries.size() >= 2:
+    spawn_count = 2
+
+  var crowd_rect := crowd.get_global_rect()
+  var spawn_area_position := crowd_rect.position + Vector2(crowd_rect.size.x * 0.12, crowd_rect.size.y * 0.12)
+  var spawn_area_size := Vector2(crowd_rect.size.x * 0.76, crowd_rect.size.y * 0.42)
+
+  for i in range(spawn_count):
+    var reaction := TextureRect.new()
+    reaction.texture = texture_pool[randi() % texture_pool.size()]
+    reaction.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    reaction.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+    reaction.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    reaction.z_index = 11
+
+    feedback_layer.add_child(reaction)
+
+    var texture_size := reaction.texture.get_size()
+    reaction.custom_minimum_size = texture_size
+    reaction.size = texture_size
+
+    var spawn_position := spawn_area_position + Vector2(
+      randf_range(0.0, spawn_area_size.x),
+      randf_range(0.0, spawn_area_size.y)
+    )
+    reaction.global_position = spawn_position - (texture_size * 0.5)
+    var reaction_scale := randf_range(crowd_reaction_scale_range.x, crowd_reaction_scale_range.y)
+    reaction.scale = Vector2(reaction_scale * 0.75, reaction_scale * 0.75)
+    reaction.modulate.a = 0.0
+
+    var reaction_tween := create_tween().set_parallel(true)
+    var delay := crowd_reaction_spawn_delay_step * float(i)
+    reaction_tween.tween_property(reaction, "modulate:a", 1.0, crowd_reaction_fade_in_duration).set_delay(delay)
+    reaction_tween.tween_property(reaction, "scale", Vector2(reaction_scale, reaction_scale), crowd_reaction_fade_in_duration).set_delay(delay)
+    reaction_tween.tween_property(reaction, "global_position:y", spawn_position.y - crowd_reaction_rise_distance, crowd_reaction_linger_duration).set_delay(delay)
+    reaction_tween.tween_property(reaction, "modulate:a", 0.0, crowd_reaction_fade_out_duration).set_delay(delay + crowd_reaction_linger_duration)
+    reaction_tween.chain().tween_callback(reaction.queue_free)
 
 func _on_emergency_flush_pressed() -> void:
   if is_spinner_animating:

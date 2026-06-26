@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="veryseriousgame"
-run/main_scene="uid://fsvnsvpeu5uh"
+run/main_scene="uid://b2prbb3u06tpk"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
