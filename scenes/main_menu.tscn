@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://b2prbb3u06tpk"]
 
-[ext_resource type="Script" uid="uid://b6tapho4wckoy" path="res://scripts/main_menu.gd" id="1_l6cm7"]
+[ext_resource type="Theme" uid="uid://3jqnahcsf764" path="res://theme.tres" id="1_ekxnf"]
+[ext_resource type="Script" uid="uid://c347vin0j1w6w" path="res://scripts/main_menu.gd" id="1_l6cm7"]
+[ext_resource type="Texture2D" uid="uid://b7eacir6kecbf" path="res://assets/art/pol background.png" id="3_8ln24"]
+[ext_resource type="Texture2D" uid="uid://d23kcik5t2k3v" path="res://assets/art/button.png" id="3_bqqt6"]
+[ext_resource type="Texture2D" uid="uid://bjedg55k0r2pl" path="res://assets/art/buttonpressed.png" id="4_wu84c"]
 
 [node name="main_menu" type="Control" unique_id=1002241180]
 layout_mode = 3
@@ -9,7 +13,17 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_ekxnf")
 script = ExtResource("1_l6cm7")
+
+[node name="background" type="TextureRect" parent="." unique_id=462726826]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_8ln24")
 
 [node name="elements" type="VBoxContainer" parent="." unique_id=1785070422]
 layout_mode = 1
@@ -18,52 +32,92 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -3182.0
-offset_top = -1809.0
-offset_right = 3182.0
-offset_bottom = 1809.0
+offset_left = -528.0
+offset_top = -851.0
+offset_right = 528.0
+offset_bottom = 851.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 500
+theme = ExtResource("1_ekxnf")
+theme_override_constants/separation = 250
 
-[node name="title" type="Label" parent="elements" unique_id=805957870]
+[node name="title" type="VBoxContainer" parent="elements" unique_id=2059685282]
+custom_minimum_size = Vector2(2500, 0)
 layout_mode = 2
-text = "title "
+size_flags_vertical = 6
+theme = ExtResource("1_ekxnf")
 
-[node name="start" type="Button" parent="elements" unique_id=1018885690]
+[node name="title_p1" type="Label" parent="elements/title" unique_id=1763978583]
 layout_mode = 2
-text = "START"
+size_flags_horizontal = 0
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 72
+theme_override_font_sizes/font_size = 512
+text = "Very Serious"
 
-[node name="options" type="Button" parent="elements" unique_id=789877805]
+[node name="title_p2" type="Label" parent="elements/title" unique_id=316594778]
 layout_mode = 2
-text = "OPTIONS"
+size_flags_horizontal = 4
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 72
+theme_override_font_sizes/font_size = 512
+text = "Politics"
 
-[node name="credits" type="Button" parent="elements" unique_id=2022112071]
+[node name="title_p3" type="Label" parent="elements/title" unique_id=2010484773]
 layout_mode = 2
-text = "CREDITS"
+size_flags_horizontal = 8
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 72
+theme_override_font_sizes/font_size = 512
+text = "Simulator"
 
-[node name="options_panel" type="PanelContainer" parent="." unique_id=1104453156]
+[node name="start" type="TextureButton" parent="elements" unique_id=2094516140]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme = ExtResource("1_ekxnf")
+texture_normal = ExtResource("3_bqqt6")
+texture_pressed = ExtResource("4_wu84c")
+
+[node name="Label" type="Label" parent="elements/start" unique_id=927622836]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -132.0
+offset_top = -116.0
+offset_right = 132.0
+offset_bottom = 36.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_font_sizes/font_size = 192
+text = "Start"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="options_panel" unique_id=949731308]
+[node name="credits" type="TextureButton" parent="elements" unique_id=487606071]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme = ExtResource("1_ekxnf")
+texture_normal = ExtResource("3_bqqt6")
+texture_pressed = ExtResource("4_wu84c")
 
-[node name="Label" type="Label" parent="options_panel/VBoxContainer" unique_id=927468589]
-layout_mode = 2
-
-[node name="Volume" type="HSlider" parent="options_panel/VBoxContainer" unique_id=1867711532]
-layout_mode = 2
-max_value = 1.0
-step = 0.05
-
-[node name="close_options" type="Button" parent="options_panel/VBoxContainer" unique_id=1349011388]
-layout_mode = 2
-text = "BACK"
+[node name="Label" type="Label" parent="elements/credits" unique_id=1522497905]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -174.0
+offset_top = -116.0
+offset_right = 174.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 192
+text = "Credits"
 
 [node name="credits_panel" type="PanelContainer" parent="." unique_id=2146189653]
 layout_mode = 1
@@ -72,20 +126,69 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_ekxnf")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="credits_panel" unique_id=1099364566]
 layout_mode = 2
+size_flags_vertical = 4
+theme = ExtResource("1_ekxnf")
+theme_override_constants/separation = 100
+
+[node name="Title" type="Label" parent="credits_panel/VBoxContainer" unique_id=788692247]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme = ExtResource("1_ekxnf")
+theme_override_constants/outline_size = 48
+theme_override_font_sizes/font_size = 768
+text = "Credits"
 
 [node name="Label" type="Label" parent="credits_panel/VBoxContainer" unique_id=27950136]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme = ExtResource("1_ekxnf")
+theme_override_constants/outline_size = 48
+theme_override_font_sizes/font_size = 256
+text = "@adamtherookie - programming, game design, and audio
+@ceryaa - art
+@zayd_mzn - programming"
+horizontal_alignment = 1
 
-[node name="close_credits" type="Button" parent="credits_panel/VBoxContainer" unique_id=214754281]
+[node name="Label2" type="Label" parent="credits_panel/VBoxContainer" unique_id=1090194904]
 layout_mode = 2
-text = "BACK"
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme = ExtResource("1_ekxnf")
+theme_override_constants/outline_size = 48
+text = "made for The Very Serious Juniper Dev Game Jam"
+horizontal_alignment = 1
+
+[node name="close_credits" type="TextureButton" parent="credits_panel/VBoxContainer" unique_id=440539245]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme = ExtResource("1_ekxnf")
+texture_normal = ExtResource("3_bqqt6")
+texture_pressed = ExtResource("4_wu84c")
+
+[node name="Label" type="Label" parent="credits_panel/VBoxContainer/close_credits" unique_id=1974384904]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -114.0
+offset_top = -116.0
+offset_right = 114.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 48
+theme_override_font_sizes/font_size = 192
+text = "Back"
 
 [connection signal="pressed" from="elements/start" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="elements/options" to="." method="_on_options_pressed"]
 [connection signal="pressed" from="elements/credits" to="." method="_on_credits_pressed"]
-[connection signal="value_changed" from="options_panel/VBoxContainer/Volume" to="." method="_on_volume_value_changed"]
-[connection signal="pressed" from="options_panel/VBoxContainer/close_options" to="." method="_on_close_options_pressed"]
 [connection signal="pressed" from="credits_panel/VBoxContainer/close_credits" to="." method="_on_close_credits_pressed"]

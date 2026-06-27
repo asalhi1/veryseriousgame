@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://yj6363d3b2xc"]
+
+[ext_resource type="Theme" uid="uid://3jqnahcsf764" path="res://theme.tres" id="1_theme"]
+[ext_resource type="Script" uid="uid://3il1t0uq8he4" path="res://scripts/opening_cutscene.gd" id="2_script"]
+
+[node name="opening_cutscene" type="Control" unique_id=322540754]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+
+[node name="background" type="ColorRect" parent="." unique_id=2090922882]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=356027501]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 120
+theme_override_constants/margin_top = 90
+theme_override_constants/margin_right = 120
+theme_override_constants/margin_bottom = 90
+
+[node name="content" type="VBoxContainer" parent="MarginContainer" unique_id=1775239436]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="intro_image" type="TextureRect" parent="MarginContainer/content" unique_id=498445451]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="story_label" type="Label" parent="MarginContainer/content" unique_id=1675671673]
+custom_minimum_size = Vector2(2000, 750)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 256
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="hint_label" type="Label" parent="MarginContainer/content" unique_id=1472939900]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_constants/outline_size = 16
+text = "Click to continue"
+horizontal_alignment = 1

@@ -82,5 +82,77 @@
     "text": "all campaign mascots have declared independence and seized your bus. your response?",
     "keywords": ["campaign", "chaos"],
     "tone": "absurd"
+  },
+  {
+    "id": "supply_chain",
+    "text": "ports are jammed, shelves are empty, and prices jump daily. what policy lever do you pull first?",
+    "keywords": ["logistics", "inflation"],
+    "tone": "policy"
+  },
+  {
+    "id": "data_breach",
+    "text": "a national health database was breached overnight. what protections do you pass this week?",
+    "keywords": ["security", "privacy"],
+    "tone": "policy"
+  },
+  {
+    "id": "moon_mayor",
+    "text": "the moon elected a mayor and asked for statehood by fax. your official position?",
+    "keywords": ["space", "diplomacy"],
+    "tone": "absurd"
+  },
+  {
+    "id": "weather_app_uprising",
+    "text": "all weather apps now predict emotions instead of rain. do you intervene?",
+    "keywords": ["tech", "chaos"],
+    "tone": "absurd"
+  },
+  {
+    "id": "fact_check_fire",
+    "text": "a fact-checker says your numbers are fiction. how do you answer without blinking?",
+    "keywords": ["media", "credibility"],
+    "tone": "rhetorical"
+  },
+  {
+    "id": "townhall_boo",
+    "text": "half the town hall is booing before you speak. what line takes control of the room?",
+    "keywords": ["crowd", "control"],
+    "tone": "rhetorical"
+  },
+  {
+    "id": "wildfire_evac",
+    "text": "wildfires jumped the containment line near three towns. what is your first command?",
+    "keywords": ["emergency", "evacuation"],
+    "tone": "action"
+  },
+  {
+    "id": "hospital_blackout",
+    "text": "a cyberattack knocked out hospital systems mid-surgery. what do you order now?",
+    "keywords": ["cyber", "response"],
+    "tone": "action"
+  },
+  {
+    "id": "veterans_waitlist",
+    "text": "veterans say they feel forgotten after months on waitlists. what do you tell them tonight?",
+    "keywords": ["veterans", "trust"],
+    "tone": "emotional"
+  },
+  {
+    "id": "school_grief",
+    "text": "a school community is grieving after a tragedy. how do you address the country with care?",
+    "keywords": ["community", "healing"],
+    "tone": "emotional"
+  },
+  {
+    "id": "unity_finish",
+    "text": "your team is split on live camera and donors are panicking. give the line that closes the night.",
+    "keywords": ["unity", "donors"],
+    "tone": "closer"
+  },
+  {
+    "id": "debate_finale",
+    "text": "the buzzer is on, your mic is fading, and the audience is undecided. final sentence?",
+    "keywords": ["debate", "closing"],
+    "tone": "closer"
   }
 ]
